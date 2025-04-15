@@ -8,8 +8,8 @@ import (
 	"os"
 	"strconv"
 
+	flat "github.com/RLBot/go-interface/flat"
 	flatbuffers "github.com/google/flatbuffers/go"
-	flat "github.com/swz-git/go-interface/flat"
 )
 
 type RLBotConnection struct {

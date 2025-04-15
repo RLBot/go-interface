@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	RLBot "github.com/swz-git/go-interface"
-	RLBotFlat "github.com/swz-git/go-interface/flat"
+	RLBot "github.com/RLBot/go-interface"
+	RLBotFlat "github.com/RLBot/go-interface/flat"
 )
 
 func main() {
@@ -26,12 +26,12 @@ func main() {
 				Type:  RLBotFlat.PlayerClassCustomBot,
 				Value: &RLBotFlat.CustomBotT{},
 			},
-			RootDir: dir + "/examples/atba",
+			RootDir:    dir + "/examples/atba",
 			RunCommand: "go run main.go",
-			AgentId: "rlbot/go-example-bot",
-			Name:    "Go Example",
-			Team:    0,
-			Loadout: &RLBotFlat.PlayerLoadoutT{},
+			AgentId:    "rlbot/go-example-bot",
+			Name:       "Go Example",
+			Team:       0,
+			Loadout:    &RLBotFlat.PlayerLoadoutT{},
 		}, {
 			Variety: &RLBotFlat.PlayerClassT{
 				Type:  RLBotFlat.PlayerClassHuman,
@@ -48,6 +48,7 @@ func main() {
 		},
 		ExistingMatchBehavior: RLBotFlat.ExistingMatchBehaviorRestart,
 		EnableRendering:       true,
-		AutoStartBots:         true,
+		AutoStartAgents:       true,
+		WaitForAgents:         true,
 	})
 }

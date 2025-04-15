@@ -5,8 +5,8 @@ import (
 	"math"
 	"os"
 
-	RLBot "github.com/swz-git/go-interface"
-	RLBotFlat "github.com/swz-git/go-interface/flat"
+	RLBot "github.com/RLBot/go-interface"
+	RLBotFlat "github.com/RLBot/go-interface/flat"
 )
 
 const DEFAULT_AGENT_ID = "rlbot/go-example-bot"

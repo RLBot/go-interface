@@ -1,4 +1,4 @@
-module github.com/swz-git/go-interface
+module github.com/RLBot/go-interface
 
 go 1.22.4
 
