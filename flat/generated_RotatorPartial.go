@@ -95,7 +95,7 @@ func (rcv *RotatorPartial) Pitch(obj *Float) *Float {
 }
 
 /// In radians with range (-pi/2,+pi/2) where 0 is flat, +pi/2 is nose straight up, -pi/2 is nose straight down.
-/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above). 
+/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above).
 func (rcv *RotatorPartial) Yaw(obj *Float) *Float {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
@@ -109,7 +109,7 @@ func (rcv *RotatorPartial) Yaw(obj *Float) *Float {
 	return nil
 }
 
-/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above). 
+/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above).
 /// In radians with range (-pi,+pi) where 0 is upright, positive is tilted right, negative is tilted left.
 func (rcv *RotatorPartial) Roll(obj *Float) *Float {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))

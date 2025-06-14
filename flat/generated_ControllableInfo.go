@@ -9,7 +9,7 @@ import (
 /// Information about a car that the client can control.
 type ControllableInfoT struct {
 	Index uint32 `json:"index"`
-	SpawnId int32 `json:"spawn_id"`
+	Identifier int32 `json:"identifier"`
 }
 
 func (t *ControllableInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -18,13 +18,13 @@ func (t *ControllableInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffs
 	}
 	ControllableInfoStart(builder)
 	ControllableInfoAddIndex(builder, t.Index)
-	ControllableInfoAddSpawnId(builder, t.SpawnId)
+	ControllableInfoAddIdentifier(builder, t.Identifier)
 	return ControllableInfoEnd(builder)
 }
 
 func (rcv *ControllableInfo) UnPackTo(t *ControllableInfoT) {
 	t.Index = rcv.Index()
-	t.SpawnId = rcv.SpawnId()
+	t.Identifier = rcv.Identifier()
 }
 
 func (rcv *ControllableInfo) UnPack() *ControllableInfoT {
@@ -71,7 +71,7 @@ func (rcv *ControllableInfo) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-/// The index of the bot.
+/// The index of the bot/script.
 func (rcv *ControllableInfo) Index() uint32 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
@@ -80,15 +80,15 @@ func (rcv *ControllableInfo) Index() uint32 {
 	return 0
 }
 
-/// The index of the bot.
+/// The index of the bot/script.
 func (rcv *ControllableInfo) MutateIndex(n uint32) bool {
 	return rcv._tab.MutateUint32Slot(4, n)
 }
 
-/// The spawn id of the bot.
+/// The id of the bot/script.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
-func (rcv *ControllableInfo) SpawnId() int32 {
+/// The id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
+func (rcv *ControllableInfo) Identifier() int32 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return rcv._tab.GetInt32(o + rcv._tab.Pos)
@@ -96,10 +96,10 @@ func (rcv *ControllableInfo) SpawnId() int32 {
 	return 0
 }
 
-/// The spawn id of the bot.
+/// The id of the bot/script.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
-func (rcv *ControllableInfo) MutateSpawnId(n int32) bool {
+/// The id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
+func (rcv *ControllableInfo) MutateIdentifier(n int32) bool {
 	return rcv._tab.MutateInt32Slot(6, n)
 }
 
@@ -109,8 +109,8 @@ func ControllableInfoStart(builder *flatbuffers.Builder) {
 func ControllableInfoAddIndex(builder *flatbuffers.Builder, index uint32) {
 	builder.PrependUint32Slot(0, index, 0)
 }
-func ControllableInfoAddSpawnId(builder *flatbuffers.Builder, spawnId int32) {
-	builder.PrependInt32Slot(1, spawnId, 0)
+func ControllableInfoAddIdentifier(builder *flatbuffers.Builder, identifier int32) {
+	builder.PrependInt32Slot(1, identifier, 0)
 }
 func ControllableInfoEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

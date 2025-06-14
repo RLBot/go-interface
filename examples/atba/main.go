@@ -39,12 +39,12 @@ func main() {
 
 	team := controllables.Team
 	index := controllables.Controllables[0].Index
-	spawnId := controllables.Controllables[0].SpawnId
+	playerId := controllables.Controllables[0].Identifier
 
 	var name string
 	for _, player := range match_config.PlayerConfigurations {
-		if player.SpawnId == spawnId {
-			name = player.Name
+		if player.PlayerId == playerId {
+			name = player.Variety.Value.(*RLBotFlat.CustomBotT).Name
 			break
 		}
 	}
@@ -56,7 +56,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		gameTickPacket, ok := packet.(*RLBotFlat.GamePacketT)
+		gameTickPacket, ok := packet.Value.(*RLBotFlat.GamePacketT)
 		if !ok { // if not gametickpacket
 			continue
 		}

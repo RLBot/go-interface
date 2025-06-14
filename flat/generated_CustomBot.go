@@ -8,17 +8,52 @@ import (
 
 /// A bot controlled by the RLBot framework.
 type CustomBotT struct {
+	Name string `json:"name"`
+	RootDir string `json:"root_dir"`
+	RunCommand string `json:"run_command"`
+	Loadout *PlayerLoadoutT `json:"loadout"`
+	AgentId string `json:"agent_id"`
+	Hivemind bool `json:"hivemind"`
 }
 
 func (t *CustomBotT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t == nil {
 		return 0
 	}
+	nameOffset := flatbuffers.UOffsetT(0)
+	if t.Name != "" {
+		nameOffset = builder.CreateString(t.Name)
+	}
+	rootDirOffset := flatbuffers.UOffsetT(0)
+	if t.RootDir != "" {
+		rootDirOffset = builder.CreateString(t.RootDir)
+	}
+	runCommandOffset := flatbuffers.UOffsetT(0)
+	if t.RunCommand != "" {
+		runCommandOffset = builder.CreateString(t.RunCommand)
+	}
+	loadoutOffset := t.Loadout.Pack(builder)
+	agentIdOffset := flatbuffers.UOffsetT(0)
+	if t.AgentId != "" {
+		agentIdOffset = builder.CreateString(t.AgentId)
+	}
 	CustomBotStart(builder)
+	CustomBotAddName(builder, nameOffset)
+	CustomBotAddRootDir(builder, rootDirOffset)
+	CustomBotAddRunCommand(builder, runCommandOffset)
+	CustomBotAddLoadout(builder, loadoutOffset)
+	CustomBotAddAgentId(builder, agentIdOffset)
+	CustomBotAddHivemind(builder, t.Hivemind)
 	return CustomBotEnd(builder)
 }
 
 func (rcv *CustomBot) UnPackTo(t *CustomBotT) {
+	t.Name = string(rcv.Name())
+	t.RootDir = string(rcv.RootDir())
+	t.RunCommand = string(rcv.RunCommand())
+	t.Loadout = rcv.Loadout(nil).UnPack()
+	t.AgentId = string(rcv.AgentId())
+	t.Hivemind = rcv.Hivemind()
 }
 
 func (rcv *CustomBot) UnPack() *CustomBotT {
@@ -65,8 +100,105 @@ func (rcv *CustomBot) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
+/// Requested bot name. When match start, RLBot will ensure each bot has a unique name; bots with
+/// duplicate names will be renamed with a suffix like `(2)`
+func (rcv *CustomBot) Name() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+/// Requested bot name. When match start, RLBot will ensure each bot has a unique name; bots with
+/// duplicate names will be renamed with a suffix like `(2)`
+/// The root directory of the bot and the working directory for the run command.
+func (rcv *CustomBot) RootDir() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+/// The root directory of the bot and the working directory for the run command.
+/// The console command that starts this bot.
+func (rcv *CustomBot) RunCommand() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+/// The console command that starts this bot.
+/// The loadout of the player.
+func (rcv *CustomBot) Loadout(obj *PlayerLoadout) *PlayerLoadout {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	if o != 0 {
+		x := rcv._tab.Indirect(o + rcv._tab.Pos)
+		if obj == nil {
+			obj = new(PlayerLoadout)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
+	}
+	return nil
+}
+
+/// The loadout of the player.
+/// A unique user-defined string that is used to connect clients to the right players/scripts.
+/// If a bot/script has a run command, RLBot will pass this agent id to the process using an environment variable, RLBOT_AGENT_ID.
+/// Upon connecting the process announces that it is responsible for this agent id and RLBot will pair the two.
+/// The recommended format for agent ids is "developer_name/bot_name".
+func (rcv *CustomBot) AgentId() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+/// A unique user-defined string that is used to connect clients to the right players/scripts.
+/// If a bot/script has a run command, RLBot will pass this agent id to the process using an environment variable, RLBOT_AGENT_ID.
+/// Upon connecting the process announces that it is responsible for this agent id and RLBot will pair the two.
+/// The recommended format for agent ids is "developer_name/bot_name".
+/// Whether this player is part of a hivemind bot where all players/cars are controlled by the same process.
+/// Players in the hivemind must have the same name, team, run command, and agent id.
+func (rcv *CustomBot) Hivemind() bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		return rcv._tab.GetBool(o + rcv._tab.Pos)
+	}
+	return false
+}
+
+/// Whether this player is part of a hivemind bot where all players/cars are controlled by the same process.
+/// Players in the hivemind must have the same name, team, run command, and agent id.
+func (rcv *CustomBot) MutateHivemind(n bool) bool {
+	return rcv._tab.MutateBoolSlot(14, n)
+}
+
 func CustomBotStart(builder *flatbuffers.Builder) {
-	builder.StartObject(0)
+	builder.StartObject(6)
+}
+func CustomBotAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
+}
+func CustomBotAddRootDir(builder *flatbuffers.Builder, rootDir flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(rootDir), 0)
+}
+func CustomBotAddRunCommand(builder *flatbuffers.Builder, runCommand flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(runCommand), 0)
+}
+func CustomBotAddLoadout(builder *flatbuffers.Builder, loadout flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(loadout), 0)
+}
+func CustomBotAddAgentId(builder *flatbuffers.Builder, agentId flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(agentId), 0)
+}
+func CustomBotAddHivemind(builder *flatbuffers.Builder, hivemind bool) {
+	builder.PrependBoolSlot(5, hivemind, false)
 }
 func CustomBotEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

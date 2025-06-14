@@ -56,11 +56,11 @@ func (rcv *Rotator) MutatePitch(n float32) bool {
 	return rcv._tab.MutateFloat32(rcv._tab.Pos+flatbuffers.UOffsetT(0), n)
 }
 
-/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above). 
+/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above).
 func (rcv *Rotator) Yaw() float32 {
 	return rcv._tab.GetFloat32(rcv._tab.Pos + flatbuffers.UOffsetT(4))
 }
-/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above). 
+/// In radians with range [-pi,+pi) where 0 is towards positive x, rotating clockwise as increased (when seen from above).
 func (rcv *Rotator) MutateYaw(n float32) bool {
 	return rcv._tab.MutateFloat32(rcv._tab.Pos+flatbuffers.UOffsetT(4), n)
 }
