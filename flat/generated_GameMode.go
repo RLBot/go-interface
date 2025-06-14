@@ -8,10 +8,10 @@ import "strconv"
 type GameMode byte
 
 const (
-	GameModeSoccer     GameMode = 0
+	GameModeSoccar     GameMode = 0
 	GameModeHoops      GameMode = 1
 	GameModeDropshot   GameMode = 2
-	GameModeHockey     GameMode = 3
+	GameModeSnowday    GameMode = 3
 	GameModeRumble     GameMode = 4
 	GameModeHeatseeker GameMode = 5
 	GameModeGridiron   GameMode = 6
@@ -19,10 +19,10 @@ const (
 )
 
 var EnumNamesGameMode = map[GameMode]string{
-	GameModeSoccer:     "Soccer",
+	GameModeSoccar:     "Soccar",
 	GameModeHoops:      "Hoops",
 	GameModeDropshot:   "Dropshot",
-	GameModeHockey:     "Hockey",
+	GameModeSnowday:    "Snowday",
 	GameModeRumble:     "Rumble",
 	GameModeHeatseeker: "Heatseeker",
 	GameModeGridiron:   "Gridiron",
@@ -30,10 +30,10 @@ var EnumNamesGameMode = map[GameMode]string{
 }
 
 var EnumValuesGameMode = map[string]GameMode{
-	"Soccer":     GameModeSoccer,
+	"Soccar":     GameModeSoccar,
 	"Hoops":      GameModeHoops,
 	"Dropshot":   GameModeDropshot,
-	"Hockey":     GameModeHockey,
+	"Snowday":    GameModeSnowday,
 	"Rumble":     GameModeRumble,
 	"Heatseeker": GameModeHeatseeker,
 	"Gridiron":   GameModeGridiron,

@@ -21,7 +21,7 @@ type PlayerInfoT struct {
 	Name string `json:"name"`
 	Team uint32 `json:"team"`
 	Boost float32 `json:"boost"`
-	SpawnId int32 `json:"spawn_id"`
+	PlayerId int32 `json:"player_id"`
 	Accolades []string `json:"accolades"`
 	LastInput *ControllerStateT `json:"last_input"`
 	HasJumped bool `json:"has_jumped"`
@@ -71,7 +71,7 @@ func (t *PlayerInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	PlayerInfoAddName(builder, nameOffset)
 	PlayerInfoAddTeam(builder, t.Team)
 	PlayerInfoAddBoost(builder, t.Boost)
-	PlayerInfoAddSpawnId(builder, t.SpawnId)
+	PlayerInfoAddPlayerId(builder, t.PlayerId)
 	PlayerInfoAddAccolades(builder, accoladesOffset)
 	lastInputOffset := t.LastInput.Pack(builder)
 	PlayerInfoAddLastInput(builder, lastInputOffset)
@@ -98,7 +98,7 @@ func (rcv *PlayerInfo) UnPackTo(t *PlayerInfoT) {
 	t.Name = string(rcv.Name())
 	t.Team = rcv.Team()
 	t.Boost = rcv.Boost()
-	t.SpawnId = rcv.SpawnId()
+	t.PlayerId = rcv.PlayerId()
 	accoladesLength := rcv.AccoladesLength()
 	t.Accolades = make([]string, accoladesLength)
 	for j := 0; j < accoladesLength; j++ {
@@ -355,10 +355,10 @@ func (rcv *PlayerInfo) MutateBoost(n float32) bool {
 	return rcv._tab.MutateFloat32Slot(28, n)
 }
 
-/// The spawn id of the player.
+/// The id of the player.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
-func (rcv *PlayerInfo) SpawnId() int32 {
+/// The id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
+func (rcv *PlayerInfo) PlayerId() int32 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(30))
 	if o != 0 {
 		return rcv._tab.GetInt32(o + rcv._tab.Pos)
@@ -366,10 +366,10 @@ func (rcv *PlayerInfo) SpawnId() int32 {
 	return 0
 }
 
-/// The spawn id of the player.
+/// The id of the player.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
-func (rcv *PlayerInfo) MutateSpawnId(n int32) bool {
+/// The id can be used to find the corresponding PlayerConfiguration in the MatchConfiguration.
+func (rcv *PlayerInfo) MutatePlayerId(n int32) bool {
 	return rcv._tab.MutateInt32Slot(30, n)
 }
 
@@ -546,8 +546,8 @@ func PlayerInfoAddTeam(builder *flatbuffers.Builder, team uint32) {
 func PlayerInfoAddBoost(builder *flatbuffers.Builder, boost float32) {
 	builder.PrependFloat32Slot(12, boost, 0.0)
 }
-func PlayerInfoAddSpawnId(builder *flatbuffers.Builder, spawnId int32) {
-	builder.PrependInt32Slot(13, spawnId, 0)
+func PlayerInfoAddPlayerId(builder *flatbuffers.Builder, playerId int32) {
+	builder.PrependInt32Slot(13, playerId, 0)
 }
 func PlayerInfoAddAccolades(builder *flatbuffers.Builder, accolades flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(14, flatbuffers.UOffsetT(accolades), 0)

@@ -6,7 +6,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"strconv"
 
 	flat "github.com/RLBot/go-interface/flat"
 	flatbuffers "github.com/google/flatbuffers/go"
@@ -41,11 +40,6 @@ func (conn RLBotConnection) Initialize(default_agent_id string, wants_ball_predi
 		return nil, nil, nil, err
 	}
 
-	err = conn.SendPacket(&flat.InitCompleteT{})
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
 	var match_config *flat.MatchConfigurationT
 	var field_info *flat.FieldInfoT
 	var controllables *flat.ControllableTeamInfoT
@@ -56,7 +50,7 @@ func (conn RLBotConnection) Initialize(default_agent_id string, wants_ball_predi
 			return nil, nil, nil, err
 		}
 
-		switch packet := packet.(type) {
+		switch packet := packet.Value.(type) {
 		case *flat.MatchConfigurationT:
 			match_config = packet
 		case *flat.FieldInfoT:
@@ -70,102 +64,72 @@ func (conn RLBotConnection) Initialize(default_agent_id string, wants_ball_predi
 		}
 	}
 
+	err = conn.SendPacket(&flat.InitCompleteT{})
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
 	return match_config, field_info, controllables, nil
 }
 
-type PacketAbilities interface {
-	Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT
-}
+func (conn RLBotConnection) SendPacket(msg any) error {
+	var packetType flat.InterfaceMessage
 
-func (conn RLBotConnection) SendPacket(packet_obj PacketAbilities) error {
-	var packetPayload []byte
-	var packetType uint16
-
-	conn.builder.Reset()
-
-	switch v := packet_obj.(type) {
-	case nil:
-		packetPayload = []byte{0}
-		packetType = 0
+	switch msg.(type) {
 	case *flat.StartCommandT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 3
+		packetType = flat.InterfaceMessageStartCommand
 	case *flat.MatchConfigurationT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 4
+		packetType = flat.InterfaceMessageMatchConfiguration
 	case *flat.PlayerInputT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 5
+		packetType = flat.InterfaceMessagePlayerInput
 	case *flat.DesiredGameStateT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 6
+		packetType = flat.InterfaceMessageDesiredGameState
 	case *flat.RenderGroupT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 7
+		packetType = flat.InterfaceMessageRenderGroup
 	case *flat.RemoveRenderGroupT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 8
+		packetType = flat.InterfaceMessageRemoveRenderGroup
 	case *flat.MatchCommT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 9
+		packetType = flat.InterfaceMessageMatchComm
 	case *flat.ConnectionSettingsT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 11
+		packetType = flat.InterfaceMessageConnectionSettings
 	case *flat.StopCommandT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 12
+		packetType = flat.InterfaceMessageStopCommand
 	case *flat.SetLoadoutT:
-		conn.builder.Finish(v.Pack(&conn.builder))
-		packetPayload = conn.builder.FinishedBytes()
-		packetType = 13
+		packetType = flat.InterfaceMessageSetLoadout
 	case *flat.InitCompleteT:
-		packetPayload = []byte{0}
-		packetType = 14
+		packetType = flat.InterfaceMessageInitComplete
+	case *flat.RenderingStatusT:
+		packetType = flat.InterfaceMessageRenderingStatus
 	default:
 		return errors.New("unsupported packet type")
 	}
 
-	finalBuf := []byte{}
+	packet := flat.InterfacePacketT{
+		Message: &flat.InterfaceMessageT{
+			Type:  packetType,
+			Value: msg,
+		},
+	}
 
-	tempBuf := make([]byte, 2)
-	binary.BigEndian.PutUint16(tempBuf, packetType)
-	finalBuf = append(finalBuf, tempBuf...)
+	conn.builder.Reset()
+	conn.builder.Finish(packet.Pack(&conn.builder))
+	packetPayload := conn.builder.FinishedBytes()
 
-	tempBuf = make([]byte, 2)
-	binary.BigEndian.PutUint16(tempBuf, uint16(len(packetPayload)))
-	finalBuf = append(finalBuf, tempBuf...)
+	packetLen := len(packetPayload)
+	finalBuf := make([]byte, 2)
 
+	binary.BigEndian.PutUint16(finalBuf, uint16(packetLen))
 	finalBuf = append(finalBuf, packetPayload...)
 
 	_, err := conn.conn.Write(finalBuf)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
-func (conn RLBotConnection) RecvPacket() (PacketAbilities, error) {
+func (conn RLBotConnection) RecvPacket() (*flat.CoreMessageT, error) {
 	buffer := make([]byte, 2)
 
-	// Read packetType
-	_, err := io.ReadFull(conn.conn, buffer)
-	if err != nil {
-		return nil, err
-	}
-	packetType := binary.BigEndian.Uint16(buffer)
-
 	// Read packetLen
-	_, err = io.ReadFull(conn.conn, buffer)
+	_, err := io.ReadFull(conn.conn, buffer)
 	if err != nil {
 		return nil, err
 	}
@@ -178,24 +142,5 @@ func (conn RLBotConnection) RecvPacket() (PacketAbilities, error) {
 		return nil, err
 	}
 
-	switch packetType {
-	case 0:
-		return nil, nil
-	case 1: //flat.GamePacketT:
-		return flat.GetRootAsGamePacket(buffer, 0).UnPack(), nil
-	case 2: //flat.FieldInfoT:
-		return flat.GetRootAsFieldInfo(buffer, 0).UnPack(), nil
-	case 4: //flat.MatchConfigurationT:
-		return flat.GetRootAsMatchConfiguration(buffer, 0).UnPack(), nil
-	case 5: //flat.PlayerInputT:
-		return flat.GetRootAsPlayerInput(buffer, 0).UnPack(), nil
-	case 9: //flat.MatchCommT:
-		return flat.GetRootAsMatchComm(buffer, 0).UnPack(), nil
-	case 10: //flat.BallPredictionT:
-		return flat.GetRootAsBallPrediction(buffer, 0).UnPack(), nil
-	case 15: //flat.ControllableTeamInfoT:
-		return flat.GetRootAsControllableTeamInfo(buffer, 0).UnPack(), nil
-	default:
-		return nil, errors.New("unknown packet type: " + strconv.Itoa(int(packetType)))
-	}
+	return flat.GetRootAsCorePacket(buffer, 0).UnPack().Message, nil
 }

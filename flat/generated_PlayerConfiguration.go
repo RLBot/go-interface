@@ -9,14 +9,8 @@ import (
 /// A PlayerConfiguration defines a player of a match.
 type PlayerConfigurationT struct {
 	Variety *PlayerClassT `json:"variety"`
-	Name string `json:"name"`
 	Team uint32 `json:"team"`
-	RootDir string `json:"root_dir"`
-	RunCommand string `json:"run_command"`
-	Loadout *PlayerLoadoutT `json:"loadout"`
-	SpawnId int32 `json:"spawn_id"`
-	AgentId string `json:"agent_id"`
-	Hivemind bool `json:"hivemind"`
+	PlayerId int32 `json:"player_id"`
 }
 
 func (t *PlayerConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -25,36 +19,13 @@ func (t *PlayerConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UO
 	}
 	varietyOffset := t.Variety.Pack(builder)
 
-	nameOffset := flatbuffers.UOffsetT(0)
-	if t.Name != "" {
-		nameOffset = builder.CreateString(t.Name)
-	}
-	rootDirOffset := flatbuffers.UOffsetT(0)
-	if t.RootDir != "" {
-		rootDirOffset = builder.CreateString(t.RootDir)
-	}
-	runCommandOffset := flatbuffers.UOffsetT(0)
-	if t.RunCommand != "" {
-		runCommandOffset = builder.CreateString(t.RunCommand)
-	}
-	loadoutOffset := t.Loadout.Pack(builder)
-	agentIdOffset := flatbuffers.UOffsetT(0)
-	if t.AgentId != "" {
-		agentIdOffset = builder.CreateString(t.AgentId)
-	}
 	PlayerConfigurationStart(builder)
 	if t.Variety != nil {
 		PlayerConfigurationAddVarietyType(builder, t.Variety.Type)
 	}
 	PlayerConfigurationAddVariety(builder, varietyOffset)
-	PlayerConfigurationAddName(builder, nameOffset)
 	PlayerConfigurationAddTeam(builder, t.Team)
-	PlayerConfigurationAddRootDir(builder, rootDirOffset)
-	PlayerConfigurationAddRunCommand(builder, runCommandOffset)
-	PlayerConfigurationAddLoadout(builder, loadoutOffset)
-	PlayerConfigurationAddSpawnId(builder, t.SpawnId)
-	PlayerConfigurationAddAgentId(builder, agentIdOffset)
-	PlayerConfigurationAddHivemind(builder, t.Hivemind)
+	PlayerConfigurationAddPlayerId(builder, t.PlayerId)
 	return PlayerConfigurationEnd(builder)
 }
 
@@ -63,14 +34,8 @@ func (rcv *PlayerConfiguration) UnPackTo(t *PlayerConfigurationT) {
 	if rcv.Variety(&varietyTable) {
 		t.Variety = rcv.VarietyType().UnPack(varietyTable)
 	}
-	t.Name = string(rcv.Name())
 	t.Team = rcv.Team()
-	t.RootDir = string(rcv.RootDir())
-	t.RunCommand = string(rcv.RunCommand())
-	t.Loadout = rcv.Loadout(nil).UnPack()
-	t.SpawnId = rcv.SpawnId()
-	t.AgentId = string(rcv.AgentId())
-	t.Hivemind = rcv.Hivemind()
+	t.PlayerId = rcv.PlayerId()
 }
 
 func (rcv *PlayerConfiguration) UnPack() *PlayerConfigurationT {
@@ -140,23 +105,9 @@ func (rcv *PlayerConfiguration) Variety(obj *flatbuffers.Table) bool {
 }
 
 /// The type of the player, i.e. human, Psyonix bot, or a custom bot.
-/// The name of the player.
-/// When match start, RLBot will ensure each bot has a unique name.
-/// In other words, the MatchConfiguration sent upon match start may contain a "Nexto (2)" if there are two Nextos in the match.
-func (rcv *PlayerConfiguration) Name() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
-	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
-	}
-	return nil
-}
-
-/// The name of the player.
-/// When match start, RLBot will ensure each bot has a unique name.
-/// In other words, the MatchConfiguration sent upon match start may contain a "Nexto (2)" if there are two Nextos in the match.
 /// The team of the player. Blue is 0, orange is 1.
 func (rcv *PlayerConfiguration) Team() uint32 {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
 		return rcv._tab.GetUint32(o + rcv._tab.Pos)
 	}
@@ -165,98 +116,29 @@ func (rcv *PlayerConfiguration) Team() uint32 {
 
 /// The team of the player. Blue is 0, orange is 1.
 func (rcv *PlayerConfiguration) MutateTeam(n uint32) bool {
-	return rcv._tab.MutateUint32Slot(10, n)
+	return rcv._tab.MutateUint32Slot(8, n)
 }
 
-/// The root directory of the bot and the working directory for the run command.
-func (rcv *PlayerConfiguration) RootDir() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
-	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
-	}
-	return nil
-}
-
-/// The root directory of the bot and the working directory for the run command.
-/// The console command that starts this bot.
-func (rcv *PlayerConfiguration) RunCommand() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
-	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
-	}
-	return nil
-}
-
-/// The console command that starts this bot.
-/// The loadout of the player.
-func (rcv *PlayerConfiguration) Loadout(obj *PlayerLoadout) *PlayerLoadout {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
-	if o != 0 {
-		x := rcv._tab.Indirect(o + rcv._tab.Pos)
-		if obj == nil {
-			obj = new(PlayerLoadout)
-		}
-		obj.Init(rcv._tab.Bytes, x)
-		return obj
-	}
-	return nil
-}
-
-/// The loadout of the player.
-/// The spawn id of the player.
-/// The value will be set by RLBot.
+/// The value will be set by RLBot and is always overriden.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding player in the GamePacket.
-func (rcv *PlayerConfiguration) SpawnId() int32 {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
+/// The player id can be used to find the corresponding player in the GamePacket.
+func (rcv *PlayerConfiguration) PlayerId() int32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.GetInt32(o + rcv._tab.Pos)
 	}
 	return 0
 }
 
-/// The spawn id of the player.
-/// The value will be set by RLBot.
+/// The value will be set by RLBot and is always overriden.
 /// This value is mostly used internally to keep track of participants in the match.
-/// The spawn id can be used to find the corresponding player in the GamePacket.
-func (rcv *PlayerConfiguration) MutateSpawnId(n int32) bool {
-	return rcv._tab.MutateInt32Slot(18, n)
-}
-
-/// A unique user-defined string that is used to connect clients to the right players/scripts.
-/// If a bot/script has a run command, RLBot will pass this agent id to the process using an environment variable, RLBOT_AGENT_ID.
-/// Upon connecting the process announces that it is responsible for this agent id and RLBot will pair the two.
-/// The recommended format for agent ids is "developer_name/bot_name".
-func (rcv *PlayerConfiguration) AgentId() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
-	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
-	}
-	return nil
-}
-
-/// A unique user-defined string that is used to connect clients to the right players/scripts.
-/// If a bot/script has a run command, RLBot will pass this agent id to the process using an environment variable, RLBOT_AGENT_ID.
-/// Upon connecting the process announces that it is responsible for this agent id and RLBot will pair the two.
-/// The recommended format for agent ids is "developer_name/bot_name".
-/// Whether this player is part of a hivemind bot where all players/cars are controlled by the same process.
-/// Players in the hivemind must have the same name, team, run command, and agent id.
-func (rcv *PlayerConfiguration) Hivemind() bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
-	if o != 0 {
-		return rcv._tab.GetBool(o + rcv._tab.Pos)
-	}
-	return false
-}
-
-/// Whether this player is part of a hivemind bot where all players/cars are controlled by the same process.
-/// Players in the hivemind must have the same name, team, run command, and agent id.
-func (rcv *PlayerConfiguration) MutateHivemind(n bool) bool {
-	return rcv._tab.MutateBoolSlot(22, n)
+/// The player id can be used to find the corresponding player in the GamePacket.
+func (rcv *PlayerConfiguration) MutatePlayerId(n int32) bool {
+	return rcv._tab.MutateInt32Slot(10, n)
 }
 
 func PlayerConfigurationStart(builder *flatbuffers.Builder) {
-	builder.StartObject(10)
+	builder.StartObject(4)
 }
 func PlayerConfigurationAddVarietyType(builder *flatbuffers.Builder, varietyType PlayerClass) {
 	builder.PrependByteSlot(0, byte(varietyType), 0)
@@ -264,29 +146,11 @@ func PlayerConfigurationAddVarietyType(builder *flatbuffers.Builder, varietyType
 func PlayerConfigurationAddVariety(builder *flatbuffers.Builder, variety flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(variety), 0)
 }
-func PlayerConfigurationAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(name), 0)
-}
 func PlayerConfigurationAddTeam(builder *flatbuffers.Builder, team uint32) {
-	builder.PrependUint32Slot(3, team, 0)
+	builder.PrependUint32Slot(2, team, 0)
 }
-func PlayerConfigurationAddRootDir(builder *flatbuffers.Builder, rootDir flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(rootDir), 0)
-}
-func PlayerConfigurationAddRunCommand(builder *flatbuffers.Builder, runCommand flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(runCommand), 0)
-}
-func PlayerConfigurationAddLoadout(builder *flatbuffers.Builder, loadout flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(loadout), 0)
-}
-func PlayerConfigurationAddSpawnId(builder *flatbuffers.Builder, spawnId int32) {
-	builder.PrependInt32Slot(7, spawnId, 0)
-}
-func PlayerConfigurationAddAgentId(builder *flatbuffers.Builder, agentId flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(agentId), 0)
-}
-func PlayerConfigurationAddHivemind(builder *flatbuffers.Builder, hivemind bool) {
-	builder.PrependBoolSlot(9, hivemind, false)
+func PlayerConfigurationAddPlayerId(builder *flatbuffers.Builder, playerId int32) {
+	builder.PrependInt32Slot(3, playerId, 0)
 }
 func PlayerConfigurationEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

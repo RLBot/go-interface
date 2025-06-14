@@ -11,27 +11,24 @@ import (
 type PlayerClass byte
 
 const (
-	PlayerClassNONE        PlayerClass = 0
-	PlayerClassCustomBot   PlayerClass = 1
-	PlayerClassHuman       PlayerClass = 2
-	PlayerClassPsyonix     PlayerClass = 3
-	PlayerClassPartyMember PlayerClass = 4
+	PlayerClassNONE       PlayerClass = 0
+	PlayerClassHuman      PlayerClass = 1
+	PlayerClassCustomBot  PlayerClass = 2
+	PlayerClassPsyonixBot PlayerClass = 3
 )
 
 var EnumNamesPlayerClass = map[PlayerClass]string{
-	PlayerClassNONE:        "NONE",
-	PlayerClassCustomBot:   "CustomBot",
-	PlayerClassHuman:       "Human",
-	PlayerClassPsyonix:     "Psyonix",
-	PlayerClassPartyMember: "PartyMember",
+	PlayerClassNONE:       "NONE",
+	PlayerClassHuman:      "Human",
+	PlayerClassCustomBot:  "CustomBot",
+	PlayerClassPsyonixBot: "PsyonixBot",
 }
 
 var EnumValuesPlayerClass = map[string]PlayerClass{
-	"NONE":        PlayerClassNONE,
-	"CustomBot":   PlayerClassCustomBot,
-	"Human":       PlayerClassHuman,
-	"Psyonix":     PlayerClassPsyonix,
-	"PartyMember": PlayerClassPartyMember,
+	"NONE":       PlayerClassNONE,
+	"Human":      PlayerClassHuman,
+	"CustomBot":  PlayerClassCustomBot,
+	"PsyonixBot": PlayerClassPsyonixBot,
 }
 
 func (v PlayerClass) String() string {
@@ -51,36 +48,30 @@ func (t *PlayerClassT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		return 0
 	}
 	switch t.Type {
-	case PlayerClassCustomBot:
-		return t.Value.(*CustomBotT).Pack(builder)
 	case PlayerClassHuman:
 		return t.Value.(*HumanT).Pack(builder)
-	case PlayerClassPsyonix:
-		return t.Value.(*PsyonixT).Pack(builder)
-	case PlayerClassPartyMember:
-		return t.Value.(*PartyMemberT).Pack(builder)
+	case PlayerClassCustomBot:
+		return t.Value.(*CustomBotT).Pack(builder)
+	case PlayerClassPsyonixBot:
+		return t.Value.(*PsyonixBotT).Pack(builder)
 	}
 	return 0
 }
 
 func (rcv PlayerClass) UnPack(table flatbuffers.Table) *PlayerClassT {
 	switch rcv {
-	case PlayerClassCustomBot:
-		var x CustomBot
-		x.Init(table.Bytes, table.Pos)
-		return &PlayerClassT{Type: PlayerClassCustomBot, Value: x.UnPack()}
 	case PlayerClassHuman:
 		var x Human
 		x.Init(table.Bytes, table.Pos)
 		return &PlayerClassT{Type: PlayerClassHuman, Value: x.UnPack()}
-	case PlayerClassPsyonix:
-		var x Psyonix
+	case PlayerClassCustomBot:
+		var x CustomBot
 		x.Init(table.Bytes, table.Pos)
-		return &PlayerClassT{Type: PlayerClassPsyonix, Value: x.UnPack()}
-	case PlayerClassPartyMember:
-		var x PartyMember
+		return &PlayerClassT{Type: PlayerClassCustomBot, Value: x.UnPack()}
+	case PlayerClassPsyonixBot:
+		var x PsyonixBot
 		x.Init(table.Bytes, table.Pos)
-		return &PlayerClassT{Type: PlayerClassPartyMember, Value: x.UnPack()}
+		return &PlayerClassT{Type: PlayerClassPsyonixBot, Value: x.UnPack()}
 	}
 	return nil
 }

@@ -21,7 +21,7 @@ type MatchConfigurationT struct {
 	InstantStart bool `json:"instant_start"`
 	Mutators *MutatorSettingsT `json:"mutators"`
 	ExistingMatchBehavior ExistingMatchBehavior `json:"existing_match_behavior"`
-	EnableRendering bool `json:"enable_rendering"`
+	EnableRendering DebugRendering `json:"enable_rendering"`
 	EnableStateSetting bool `json:"enable_state_setting"`
 	AutoSaveReplay bool `json:"auto_save_replay"`
 	Freeplay bool `json:"freeplay"`
@@ -357,17 +357,17 @@ func (rcv *MatchConfiguration) MutateExistingMatchBehavior(n ExistingMatchBehavi
 }
 
 /// Whether debug rendering is displayed.
-func (rcv *MatchConfiguration) EnableRendering() bool {
+func (rcv *MatchConfiguration) EnableRendering() DebugRendering {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
 	if o != 0 {
-		return rcv._tab.GetBool(o + rcv._tab.Pos)
+		return DebugRendering(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
-	return false
+	return 0
 }
 
 /// Whether debug rendering is displayed.
-func (rcv *MatchConfiguration) MutateEnableRendering(n bool) bool {
-	return rcv._tab.MutateBoolSlot(28, n)
+func (rcv *MatchConfiguration) MutateEnableRendering(n DebugRendering) bool {
+	return rcv._tab.MutateByteSlot(28, byte(n))
 }
 
 /// Whether clients are allowed to manipulate the game state, e.g. teleporting cars and ball.
@@ -459,8 +459,8 @@ func MatchConfigurationAddMutators(builder *flatbuffers.Builder, mutators flatbu
 func MatchConfigurationAddExistingMatchBehavior(builder *flatbuffers.Builder, existingMatchBehavior ExistingMatchBehavior) {
 	builder.PrependByteSlot(11, byte(existingMatchBehavior), 0)
 }
-func MatchConfigurationAddEnableRendering(builder *flatbuffers.Builder, enableRendering bool) {
-	builder.PrependBoolSlot(12, enableRendering, false)
+func MatchConfigurationAddEnableRendering(builder *flatbuffers.Builder, enableRendering DebugRendering) {
+	builder.PrependByteSlot(12, byte(enableRendering), 0)
 }
 func MatchConfigurationAddEnableStateSetting(builder *flatbuffers.Builder, enableStateSetting bool) {
 	builder.PrependBoolSlot(13, enableStateSetting, true)

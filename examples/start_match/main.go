@@ -24,30 +24,29 @@ func main() {
 		PlayerConfigurations: []*RLBotFlat.PlayerConfigurationT{{
 			Variety: &RLBotFlat.PlayerClassT{
 				Type:  RLBotFlat.PlayerClassCustomBot,
-				Value: &RLBotFlat.CustomBotT{},
+				Value: &RLBotFlat.CustomBotT{
+					RootDir:    dir + "/examples/atba",
+					RunCommand: "go run main.go",
+					AgentId:    "rlbot/go-example-bot",
+					Name:       "Go Example",
+					Loadout:    &RLBotFlat.PlayerLoadoutT{},
+				},
 			},
-			RootDir:    dir + "/examples/atba",
-			RunCommand: "go run main.go",
-			AgentId:    "rlbot/go-example-bot",
-			Name:       "Go Example",
 			Team:       0,
-			Loadout:    &RLBotFlat.PlayerLoadoutT{},
 		}, {
 			Variety: &RLBotFlat.PlayerClassT{
 				Type:  RLBotFlat.PlayerClassHuman,
 				Value: &RLBotFlat.HumanT{},
 			},
-			Name:    "",
 			Team:    1,
-			Loadout: &RLBotFlat.PlayerLoadoutT{},
 		}},
-		GameMode:   RLBotFlat.GameModeSoccer,
+		GameMode:   RLBotFlat.GameModeSoccar,
 		GameMapUpk: "UtopiaStadium_P",
 		Mutators: &RLBotFlat.MutatorSettingsT{
 			MatchLength: RLBotFlat.MatchLengthMutatorUnlimited,
 		},
 		ExistingMatchBehavior: RLBotFlat.ExistingMatchBehaviorRestart,
-		EnableRendering:       true,
+		EnableRendering:       RLBotFlat.DebugRenderingAlwaysOff,
 		AutoStartAgents:       true,
 		WaitForAgents:         true,
 	})
