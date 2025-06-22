@@ -21,6 +21,8 @@ const (
 	RumbleMutatorBatmanRumble     RumbleMutator = 10
 	RumbleMutatorGrapplingOnly    RumbleMutator = 11
 	RumbleMutatorHaymakerOnly     RumbleMutator = 12
+	RumbleMutatorSpikeRushForce   RumbleMutator = 13
+	RumbleMutatorRPS              RumbleMutator = 14
 )
 
 var EnumNamesRumbleMutator = map[RumbleMutator]string{
@@ -37,6 +39,8 @@ var EnumNamesRumbleMutator = map[RumbleMutator]string{
 	RumbleMutatorBatmanRumble:     "BatmanRumble",
 	RumbleMutatorGrapplingOnly:    "GrapplingOnly",
 	RumbleMutatorHaymakerOnly:     "HaymakerOnly",
+	RumbleMutatorSpikeRushForce:   "SpikeRushForce",
+	RumbleMutatorRPS:              "RPS",
 }
 
 var EnumValuesRumbleMutator = map[string]RumbleMutator{
@@ -53,6 +57,8 @@ var EnumValuesRumbleMutator = map[string]RumbleMutator{
 	"BatmanRumble":     RumbleMutatorBatmanRumble,
 	"GrapplingOnly":    RumbleMutatorGrapplingOnly,
 	"HaymakerOnly":     RumbleMutatorHaymakerOnly,
+	"SpikeRushForce":   RumbleMutatorSpikeRushForce,
+	"RPS":              RumbleMutatorRPS,
 }
 
 func (v RumbleMutator) String() string {

@@ -8,33 +8,39 @@ import "strconv"
 type DemolishMutator byte
 
 const (
-	DemolishMutatorDefault         DemolishMutator = 0
-	DemolishMutatorDisabled        DemolishMutator = 1
-	DemolishMutatorFriendlyFire    DemolishMutator = 2
-	DemolishMutatorOnContact       DemolishMutator = 3
-	DemolishMutatorOnContactFF     DemolishMutator = 4
-	DemolishMutatorOnBallContact   DemolishMutator = 5
-	DemolishMutatorOnBallContactFF DemolishMutator = 6
+	DemolishMutatorDefault               DemolishMutator = 0
+	DemolishMutatorDisabled              DemolishMutator = 1
+	DemolishMutatorFriendlyFire          DemolishMutator = 2
+	DemolishMutatorOnContact             DemolishMutator = 3
+	DemolishMutatorOnContactFF           DemolishMutator = 4
+	DemolishMutatorOnBallContact         DemolishMutator = 5
+	DemolishMutatorOnBallContactFF       DemolishMutator = 6
+	DemolishMutatorOnBallContactSilent   DemolishMutator = 7
+	DemolishMutatorOnBallContactFFSilent DemolishMutator = 8
 )
 
 var EnumNamesDemolishMutator = map[DemolishMutator]string{
-	DemolishMutatorDefault:         "Default",
-	DemolishMutatorDisabled:        "Disabled",
-	DemolishMutatorFriendlyFire:    "FriendlyFire",
-	DemolishMutatorOnContact:       "OnContact",
-	DemolishMutatorOnContactFF:     "OnContactFF",
-	DemolishMutatorOnBallContact:   "OnBallContact",
-	DemolishMutatorOnBallContactFF: "OnBallContactFF",
+	DemolishMutatorDefault:               "Default",
+	DemolishMutatorDisabled:              "Disabled",
+	DemolishMutatorFriendlyFire:          "FriendlyFire",
+	DemolishMutatorOnContact:             "OnContact",
+	DemolishMutatorOnContactFF:           "OnContactFF",
+	DemolishMutatorOnBallContact:         "OnBallContact",
+	DemolishMutatorOnBallContactFF:       "OnBallContactFF",
+	DemolishMutatorOnBallContactSilent:   "OnBallContactSilent",
+	DemolishMutatorOnBallContactFFSilent: "OnBallContactFFSilent",
 }
 
 var EnumValuesDemolishMutator = map[string]DemolishMutator{
-	"Default":         DemolishMutatorDefault,
-	"Disabled":        DemolishMutatorDisabled,
-	"FriendlyFire":    DemolishMutatorFriendlyFire,
-	"OnContact":       DemolishMutatorOnContact,
-	"OnContactFF":     DemolishMutatorOnContactFF,
-	"OnBallContact":   DemolishMutatorOnBallContact,
-	"OnBallContactFF": DemolishMutatorOnBallContactFF,
+	"Default":               DemolishMutatorDefault,
+	"Disabled":              DemolishMutatorDisabled,
+	"FriendlyFire":          DemolishMutatorFriendlyFire,
+	"OnContact":             DemolishMutatorOnContact,
+	"OnContactFF":           DemolishMutatorOnContactFF,
+	"OnBallContact":         DemolishMutatorOnBallContact,
+	"OnBallContactFF":       DemolishMutatorOnBallContactFF,
+	"OnBallContactSilent":   DemolishMutatorOnBallContactSilent,
+	"OnBallContactFFSilent": DemolishMutatorOnBallContactFFSilent,
 }
 
 func (v DemolishMutator) String() string {
