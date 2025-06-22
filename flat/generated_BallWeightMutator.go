@@ -8,33 +8,36 @@ import "strconv"
 type BallWeightMutator byte
 
 const (
-	BallWeightMutatorDefault        BallWeightMutator = 0
-	BallWeightMutatorLight          BallWeightMutator = 1
-	BallWeightMutatorHeavy          BallWeightMutator = 2
-	BallWeightMutatorSuperLight     BallWeightMutator = 3
-	BallWeightMutatorCurveBall      BallWeightMutator = 4
-	BallWeightMutatorBeachBallCurve BallWeightMutator = 5
-	BallWeightMutatorMagnusFutBall  BallWeightMutator = 6
+	BallWeightMutatorDefault           BallWeightMutator = 0
+	BallWeightMutatorLight             BallWeightMutator = 1
+	BallWeightMutatorHeavy             BallWeightMutator = 2
+	BallWeightMutatorSuperLight        BallWeightMutator = 3
+	BallWeightMutatorCurveBall         BallWeightMutator = 4
+	BallWeightMutatorBeachBallCurve    BallWeightMutator = 5
+	BallWeightMutatorMagnusFutBall     BallWeightMutator = 6
+	BallWeightMutatorMagnusFutballLess BallWeightMutator = 7
 )
 
 var EnumNamesBallWeightMutator = map[BallWeightMutator]string{
-	BallWeightMutatorDefault:        "Default",
-	BallWeightMutatorLight:          "Light",
-	BallWeightMutatorHeavy:          "Heavy",
-	BallWeightMutatorSuperLight:     "SuperLight",
-	BallWeightMutatorCurveBall:      "CurveBall",
-	BallWeightMutatorBeachBallCurve: "BeachBallCurve",
-	BallWeightMutatorMagnusFutBall:  "MagnusFutBall",
+	BallWeightMutatorDefault:           "Default",
+	BallWeightMutatorLight:             "Light",
+	BallWeightMutatorHeavy:             "Heavy",
+	BallWeightMutatorSuperLight:        "SuperLight",
+	BallWeightMutatorCurveBall:         "CurveBall",
+	BallWeightMutatorBeachBallCurve:    "BeachBallCurve",
+	BallWeightMutatorMagnusFutBall:     "MagnusFutBall",
+	BallWeightMutatorMagnusFutballLess: "MagnusFutballLess",
 }
 
 var EnumValuesBallWeightMutator = map[string]BallWeightMutator{
-	"Default":        BallWeightMutatorDefault,
-	"Light":          BallWeightMutatorLight,
-	"Heavy":          BallWeightMutatorHeavy,
-	"SuperLight":     BallWeightMutatorSuperLight,
-	"CurveBall":      BallWeightMutatorCurveBall,
-	"BeachBallCurve": BallWeightMutatorBeachBallCurve,
-	"MagnusFutBall":  BallWeightMutatorMagnusFutBall,
+	"Default":           BallWeightMutatorDefault,
+	"Light":             BallWeightMutatorLight,
+	"Heavy":             BallWeightMutatorHeavy,
+	"SuperLight":        BallWeightMutatorSuperLight,
+	"CurveBall":         BallWeightMutatorCurveBall,
+	"BeachBallCurve":    BallWeightMutatorBeachBallCurve,
+	"MagnusFutBall":     BallWeightMutatorMagnusFutBall,
+	"MagnusFutballLess": BallWeightMutatorMagnusFutballLess,
 }
 
 func (v BallWeightMutator) String() string {

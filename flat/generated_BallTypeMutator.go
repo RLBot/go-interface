@@ -21,6 +21,8 @@ const (
 	BallTypeMutatorPlayerSeeking BallTypeMutator = 10
 	BallTypeMutatorDropshot      BallTypeMutator = 11
 	BallTypeMutatorScoreAbsorb   BallTypeMutator = 12
+	BallTypeMutatorShoe          BallTypeMutator = 13
+	BallTypeMutatorPizzaPuck     BallTypeMutator = 14
 )
 
 var EnumNamesBallTypeMutator = map[BallTypeMutator]string{
@@ -37,6 +39,8 @@ var EnumNamesBallTypeMutator = map[BallTypeMutator]string{
 	BallTypeMutatorPlayerSeeking: "PlayerSeeking",
 	BallTypeMutatorDropshot:      "Dropshot",
 	BallTypeMutatorScoreAbsorb:   "ScoreAbsorb",
+	BallTypeMutatorShoe:          "Shoe",
+	BallTypeMutatorPizzaPuck:     "PizzaPuck",
 }
 
 var EnumValuesBallTypeMutator = map[string]BallTypeMutator{
@@ -53,6 +57,8 @@ var EnumValuesBallTypeMutator = map[string]BallTypeMutator{
 	"PlayerSeeking": BallTypeMutatorPlayerSeeking,
 	"Dropshot":      BallTypeMutatorDropshot,
 	"ScoreAbsorb":   BallTypeMutatorScoreAbsorb,
+	"Shoe":          BallTypeMutatorShoe,
+	"PizzaPuck":     BallTypeMutatorPizzaPuck,
 }
 
 func (v BallTypeMutator) String() string {

@@ -39,6 +39,7 @@ type MutatorSettingsT struct {
 	AerialGoalScore AerialGoalScoreMutator `json:"aerial_goal_score"`
 	AssistGoalScore AssistGoalScoreMutator `json:"assist_goal_score"`
 	InputRestriction InputRestrictionMutator `json:"input_restriction"`
+	ScoringRule ScoringRule `json:"scoring_rule"`
 }
 
 func (t *MutatorSettingsT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -77,6 +78,7 @@ func (t *MutatorSettingsT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffse
 	MutatorSettingsAddAerialGoalScore(builder, t.AerialGoalScore)
 	MutatorSettingsAddAssistGoalScore(builder, t.AssistGoalScore)
 	MutatorSettingsAddInputRestriction(builder, t.InputRestriction)
+	MutatorSettingsAddScoringRule(builder, t.ScoringRule)
 	return MutatorSettingsEnd(builder)
 }
 
@@ -112,6 +114,7 @@ func (rcv *MutatorSettings) UnPackTo(t *MutatorSettingsT) {
 	t.AerialGoalScore = rcv.AerialGoalScore()
 	t.AssistGoalScore = rcv.AssistGoalScore()
 	t.InputRestriction = rcv.InputRestriction()
+	t.ScoringRule = rcv.ScoringRule()
 }
 
 func (rcv *MutatorSettings) UnPack() *MutatorSettingsT {
@@ -594,8 +597,22 @@ func (rcv *MutatorSettings) MutateInputRestriction(n InputRestrictionMutator) bo
 	return rcv._tab.MutateByteSlot(64, byte(n))
 }
 
+/// Additional rules that apply to scoring goals
+func (rcv *MutatorSettings) ScoringRule() ScoringRule {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(66))
+	if o != 0 {
+		return ScoringRule(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Additional rules that apply to scoring goals
+func (rcv *MutatorSettings) MutateScoringRule(n ScoringRule) bool {
+	return rcv._tab.MutateByteSlot(66, byte(n))
+}
+
 func MutatorSettingsStart(builder *flatbuffers.Builder) {
-	builder.StartObject(31)
+	builder.StartObject(32)
 }
 func MutatorSettingsAddMatchLength(builder *flatbuffers.Builder, matchLength MatchLengthMutator) {
 	builder.PrependByteSlot(0, byte(matchLength), 0)
@@ -689,6 +706,9 @@ func MutatorSettingsAddAssistGoalScore(builder *flatbuffers.Builder, assistGoalS
 }
 func MutatorSettingsAddInputRestriction(builder *flatbuffers.Builder, inputRestriction InputRestrictionMutator) {
 	builder.PrependByteSlot(30, byte(inputRestriction), 0)
+}
+func MutatorSettingsAddScoringRule(builder *flatbuffers.Builder, scoringRule ScoringRule) {
+	builder.PrependByteSlot(31, byte(scoringRule), 0)
 }
 func MutatorSettingsEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
