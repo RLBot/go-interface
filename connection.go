@@ -76,6 +76,8 @@ func (conn RLBotConnection) SendPacket(msg any) error {
 	var packetType flat.InterfaceMessage
 
 	switch msg.(type) {
+	case *flat.DisconnectSignalT:
+		packetType = flat.InterfaceMessageDisconnectSignal
 	case *flat.StartCommandT:
 		packetType = flat.InterfaceMessageStartCommand
 	case *flat.MatchConfigurationT:
