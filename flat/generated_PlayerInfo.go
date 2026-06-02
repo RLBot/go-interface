@@ -255,6 +255,9 @@ func (rcv *PlayerInfo) MutateAirState(n AirState) bool {
 /// The value is -1 while on ground or when airborne for too long after jumping.
 /// A dodge/double jump is possible for 1.25 seconds after the first jump plus
 /// up to an additional 0.2 seconds depending how long the jump button was pressed for the first jump.
+/// Note that falling off a surface instead of jumping, does not activate the dodge timeout, and making a dodge/double jump possible indefinitely.
+/// This is commonly known as a flip reset.
+/// The car is holding a flip reset if `air_state == InAir && !has_jumped && !has_double_jumped && !has_dodged`.
 func (rcv *PlayerInfo) DodgeTimeout() float32 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
 	if o != 0 {
@@ -267,6 +270,9 @@ func (rcv *PlayerInfo) DodgeTimeout() float32 {
 /// The value is -1 while on ground or when airborne for too long after jumping.
 /// A dodge/double jump is possible for 1.25 seconds after the first jump plus
 /// up to an additional 0.2 seconds depending how long the jump button was pressed for the first jump.
+/// Note that falling off a surface instead of jumping, does not activate the dodge timeout, and making a dodge/double jump possible indefinitely.
+/// This is commonly known as a flip reset.
+/// The car is holding a flip reset if `air_state == InAir && !has_jumped && !has_double_jumped && !has_dodged`.
 func (rcv *PlayerInfo) MutateDodgeTimeout(n float32) bool {
 	return rcv._tab.MutateFloat32Slot(16, n)
 }
@@ -429,7 +435,11 @@ func (rcv *PlayerInfo) LastInput(obj *ControllerState) *ControllerState {
 }
 
 /// The last controller input from this player.
-/// True if the player has jumped. See dodge_timeout to know if a dodge/secondary jump is available.
+/// True if the player has jumped into the air.
+/// See dodge_timeout to know if a dodge/double jump is temporarily available.
+/// Note that falling off a surface instead of jumping, does not activate the dodge timeout, and making a dodge/double jump possible indefinitely.
+/// This is commonly known as a flip reset.
+/// The car is holding a flip reset if `air_state == InAir && !has_jumped && !has_double_jumped && !has_dodged`.
 func (rcv *PlayerInfo) HasJumped() bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(36))
 	if o != 0 {
@@ -438,12 +448,16 @@ func (rcv *PlayerInfo) HasJumped() bool {
 	return false
 }
 
-/// True if the player has jumped. See dodge_timeout to know if a dodge/secondary jump is available.
+/// True if the player has jumped into the air.
+/// See dodge_timeout to know if a dodge/double jump is temporarily available.
+/// Note that falling off a surface instead of jumping, does not activate the dodge timeout, and making a dodge/double jump possible indefinitely.
+/// This is commonly known as a flip reset.
+/// The car is holding a flip reset if `air_state == InAir && !has_jumped && !has_double_jumped && !has_dodged`.
 func (rcv *PlayerInfo) MutateHasJumped(n bool) bool {
 	return rcv._tab.MutateBoolSlot(36, n)
 }
 
-/// True if the player has doubled jumped.
+/// True if the player has doubled jumped since it left the ground. False while on the ground.
 func (rcv *PlayerInfo) HasDoubleJumped() bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(38))
 	if o != 0 {
@@ -452,12 +466,12 @@ func (rcv *PlayerInfo) HasDoubleJumped() bool {
 	return false
 }
 
-/// True if the player has doubled jumped.
+/// True if the player has doubled jumped since it left the ground. False while on the ground.
 func (rcv *PlayerInfo) MutateHasDoubleJumped(n bool) bool {
 	return rcv._tab.MutateBoolSlot(38, n)
 }
 
-/// True if the player has dodged.
+/// True if the player has dodged since it left the ground. False while the ground.
 func (rcv *PlayerInfo) HasDodged() bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(40))
 	if o != 0 {
@@ -466,7 +480,7 @@ func (rcv *PlayerInfo) HasDodged() bool {
 	return false
 }
 
-/// True if the player has dodged.
+/// True if the player has dodged since it left the ground. False while the ground.
 func (rcv *PlayerInfo) MutateHasDodged(n bool) bool {
 	return rcv._tab.MutateBoolSlot(40, n)
 }

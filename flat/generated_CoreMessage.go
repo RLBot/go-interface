@@ -29,6 +29,10 @@ const (
 	CoreMessageControllableTeamInfo CoreMessage = 7
 	/// An agent had its ability to render changed
 	CoreMessageRenderingStatus      CoreMessage = 8
+	/// Requests for client to send a PingResponse asap for measuring latency
+	CoreMessagePingRequest          CoreMessage = 9
+	/// Response to PingRequest for measuring latency
+	CoreMessagePingResponse         CoreMessage = 10
 )
 
 var EnumNamesCoreMessage = map[CoreMessage]string{
@@ -41,6 +45,8 @@ var EnumNamesCoreMessage = map[CoreMessage]string{
 	CoreMessageBallPrediction:       "BallPrediction",
 	CoreMessageControllableTeamInfo: "ControllableTeamInfo",
 	CoreMessageRenderingStatus:      "RenderingStatus",
+	CoreMessagePingRequest:          "PingRequest",
+	CoreMessagePingResponse:         "PingResponse",
 }
 
 var EnumValuesCoreMessage = map[string]CoreMessage{
@@ -53,6 +59,8 @@ var EnumValuesCoreMessage = map[string]CoreMessage{
 	"BallPrediction":       CoreMessageBallPrediction,
 	"ControllableTeamInfo": CoreMessageControllableTeamInfo,
 	"RenderingStatus":      CoreMessageRenderingStatus,
+	"PingRequest":          CoreMessagePingRequest,
+	"PingResponse":         CoreMessagePingResponse,
 }
 
 func (v CoreMessage) String() string {
@@ -88,6 +96,10 @@ func (t *CoreMessageT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		return t.Value.(*ControllableTeamInfoT).Pack(builder)
 	case CoreMessageRenderingStatus:
 		return t.Value.(*RenderingStatusT).Pack(builder)
+	case CoreMessagePingRequest:
+		return t.Value.(*PingRequestT).Pack(builder)
+	case CoreMessagePingResponse:
+		return t.Value.(*PingResponseT).Pack(builder)
 	}
 	return 0
 }
@@ -126,6 +138,14 @@ func (rcv CoreMessage) UnPack(table flatbuffers.Table) *CoreMessageT {
 		var x RenderingStatus
 		x.Init(table.Bytes, table.Pos)
 		return &CoreMessageT{Type: CoreMessageRenderingStatus, Value: x.UnPack()}
+	case CoreMessagePingRequest:
+		var x PingRequest
+		x.Init(table.Bytes, table.Pos)
+		return &CoreMessageT{Type: CoreMessagePingRequest, Value: x.UnPack()}
+	case CoreMessagePingResponse:
+		var x PingResponse
+		x.Init(table.Bytes, table.Pos)
+		return &CoreMessageT{Type: CoreMessagePingResponse, Value: x.UnPack()}
 	}
 	return nil
 }

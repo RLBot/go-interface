@@ -25,6 +25,7 @@ type MatchConfigurationT struct {
 	EnableStateSetting bool `json:"enable_state_setting"`
 	AutoSaveReplay bool `json:"auto_save_replay"`
 	Freeplay bool `json:"freeplay"`
+	PerformanceMonitor PerformanceMonitor `json:"performance_monitor"`
 }
 
 func (t *MatchConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -83,6 +84,7 @@ func (t *MatchConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UOf
 	MatchConfigurationAddEnableStateSetting(builder, t.EnableStateSetting)
 	MatchConfigurationAddAutoSaveReplay(builder, t.AutoSaveReplay)
 	MatchConfigurationAddFreeplay(builder, t.Freeplay)
+	MatchConfigurationAddPerformanceMonitor(builder, t.PerformanceMonitor)
 	return MatchConfigurationEnd(builder)
 }
 
@@ -115,6 +117,7 @@ func (rcv *MatchConfiguration) UnPackTo(t *MatchConfigurationT) {
 	t.EnableStateSetting = rcv.EnableStateSetting()
 	t.AutoSaveReplay = rcv.AutoSaveReplay()
 	t.Freeplay = rcv.Freeplay()
+	t.PerformanceMonitor = rcv.PerformanceMonitor()
 }
 
 func (rcv *MatchConfiguration) UnPack() *MatchConfigurationT {
@@ -414,8 +417,22 @@ func (rcv *MatchConfiguration) MutateFreeplay(n bool) bool {
 	return rcv._tab.MutateBoolSlot(34, n)
 }
 
+/// Controls when the in-game performance monitor will display.
+func (rcv *MatchConfiguration) PerformanceMonitor() PerformanceMonitor {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(36))
+	if o != 0 {
+		return PerformanceMonitor(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Controls when the in-game performance monitor will display.
+func (rcv *MatchConfiguration) MutatePerformanceMonitor(n PerformanceMonitor) bool {
+	return rcv._tab.MutateByteSlot(36, byte(n))
+}
+
 func MatchConfigurationStart(builder *flatbuffers.Builder) {
-	builder.StartObject(16)
+	builder.StartObject(17)
 }
 func MatchConfigurationAddLauncher(builder *flatbuffers.Builder, launcher Launcher) {
 	builder.PrependByteSlot(0, byte(launcher), 0)
@@ -470,6 +487,9 @@ func MatchConfigurationAddAutoSaveReplay(builder *flatbuffers.Builder, autoSaveR
 }
 func MatchConfigurationAddFreeplay(builder *flatbuffers.Builder, freeplay bool) {
 	builder.PrependBoolSlot(15, freeplay, false)
+}
+func MatchConfigurationAddPerformanceMonitor(builder *flatbuffers.Builder, performanceMonitor PerformanceMonitor) {
+	builder.PrependByteSlot(16, byte(performanceMonitor), 0)
 }
 func MatchConfigurationEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

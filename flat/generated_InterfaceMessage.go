@@ -11,76 +11,88 @@ import (
 type InterfaceMessage byte
 
 const (
-	InterfaceMessageNONE               InterfaceMessage = 0
+	InterfaceMessageNONE                     InterfaceMessage = 0
 	/// Sent to core to indicate that you want to disconnect.
-	InterfaceMessageDisconnectSignal   InterfaceMessage = 1
+	InterfaceMessageDisconnectSignal         InterfaceMessage = 1
 	/// Starts a new match with a rlbot.toml file
-	InterfaceMessageStartCommand       InterfaceMessage = 2
+	InterfaceMessageStartCommand             InterfaceMessage = 2
 	/// Starts a new match from a MatchConfiguration
-	InterfaceMessageMatchConfiguration InterfaceMessage = 3
+	InterfaceMessageMatchConfiguration       InterfaceMessage = 3
 	/// Sent by bot agents to control their car(s)
-	InterfaceMessagePlayerInput        InterfaceMessage = 4
+	InterfaceMessagePlayerInput              InterfaceMessage = 4
 	/// Sent by agents to state-set the game state.
 	/// `enable_state_setting` must be true in the MatchConfiguration.
-	InterfaceMessageDesiredGameState   InterfaceMessage = 5
-	/// Sent by agents to render lines & text in the game.
-	InterfaceMessageRenderGroup        InterfaceMessage = 6
+	InterfaceMessageDesiredGameState         InterfaceMessage = 5
+	/// Sent by agents to render lines and text in the game.
+	InterfaceMessageRenderGroup              InterfaceMessage = 6
 	/// Sent by agents to remove a render group.
-	InterfaceMessageRemoveRenderGroup  InterfaceMessage = 7
+	InterfaceMessageRemoveRenderGroup        InterfaceMessage = 7
 	/// Agents may send a MatchComm packet to communicate with other agents,
 	/// core relays this to other agents. May be `team_only` if set.
-	InterfaceMessageMatchComm          InterfaceMessage = 8
+	InterfaceMessageMatchComm                InterfaceMessage = 8
 	/// Should be sent by agents immediately after connecting.
 	/// Tells core about who the connection represents and what data they want to receive.
-	InterfaceMessageConnectionSettings InterfaceMessage = 9
+	InterfaceMessageConnectionSettings       InterfaceMessage = 9
 	/// Ends the match and optionally the RLBotServer too.
-	InterfaceMessageStopCommand        InterfaceMessage = 10
+	InterfaceMessageStopCommand              InterfaceMessage = 10
 	/// Sent by sessions to change the loadout of their cars. Will always work if a loadout was not
 	/// specified in match settings and when sent before `InitComplete`. Ignored if state setting
 	/// was disabled in the match settings, and a loadout was set in match settings.
-	InterfaceMessageSetLoadout         InterfaceMessage = 11
+	InterfaceMessageSetLoadout               InterfaceMessage = 11
 	/// Indicates that the session has finished all initialization and is ready to start receiving
 	/// game messages without delay. The match will not start until all sessions have sent this
 	/// message.
-	InterfaceMessageInitComplete       InterfaceMessage = 12
+	InterfaceMessageInitComplete             InterfaceMessage = 12
 	/// Requests for a specificed agent to have its ability to render changed.
 	/// This changed will then be broadcasted to all current connections.
 	/// Does nothing if rendering has been completely disabled.
-	InterfaceMessageRenderingStatus    InterfaceMessage = 13
+	InterfaceMessageRenderingStatus          InterfaceMessage = 13
+	/// Requests for server to send a PingResponse asap for measuring latency
+	InterfaceMessagePingRequest              InterfaceMessage = 14
+	/// Response to PingRequest for measuring latency
+	InterfaceMessagePingResponse             InterfaceMessage = 15
+	/// Sent by sessions to control when the in-game performance monitor will display
+	InterfaceMessageUpdatePerformanceMonitor InterfaceMessage = 16
 )
 
 var EnumNamesInterfaceMessage = map[InterfaceMessage]string{
-	InterfaceMessageNONE:               "NONE",
-	InterfaceMessageDisconnectSignal:   "DisconnectSignal",
-	InterfaceMessageStartCommand:       "StartCommand",
-	InterfaceMessageMatchConfiguration: "MatchConfiguration",
-	InterfaceMessagePlayerInput:        "PlayerInput",
-	InterfaceMessageDesiredGameState:   "DesiredGameState",
-	InterfaceMessageRenderGroup:        "RenderGroup",
-	InterfaceMessageRemoveRenderGroup:  "RemoveRenderGroup",
-	InterfaceMessageMatchComm:          "MatchComm",
-	InterfaceMessageConnectionSettings: "ConnectionSettings",
-	InterfaceMessageStopCommand:        "StopCommand",
-	InterfaceMessageSetLoadout:         "SetLoadout",
-	InterfaceMessageInitComplete:       "InitComplete",
-	InterfaceMessageRenderingStatus:    "RenderingStatus",
+	InterfaceMessageNONE:                     "NONE",
+	InterfaceMessageDisconnectSignal:         "DisconnectSignal",
+	InterfaceMessageStartCommand:             "StartCommand",
+	InterfaceMessageMatchConfiguration:       "MatchConfiguration",
+	InterfaceMessagePlayerInput:              "PlayerInput",
+	InterfaceMessageDesiredGameState:         "DesiredGameState",
+	InterfaceMessageRenderGroup:              "RenderGroup",
+	InterfaceMessageRemoveRenderGroup:        "RemoveRenderGroup",
+	InterfaceMessageMatchComm:                "MatchComm",
+	InterfaceMessageConnectionSettings:       "ConnectionSettings",
+	InterfaceMessageStopCommand:              "StopCommand",
+	InterfaceMessageSetLoadout:               "SetLoadout",
+	InterfaceMessageInitComplete:             "InitComplete",
+	InterfaceMessageRenderingStatus:          "RenderingStatus",
+	InterfaceMessagePingRequest:              "PingRequest",
+	InterfaceMessagePingResponse:             "PingResponse",
+	InterfaceMessageUpdatePerformanceMonitor: "UpdatePerformanceMonitor",
 }
 
 var EnumValuesInterfaceMessage = map[string]InterfaceMessage{
-	"NONE":               InterfaceMessageNONE,
-	"DisconnectSignal":   InterfaceMessageDisconnectSignal,
-	"StartCommand":       InterfaceMessageStartCommand,
-	"MatchConfiguration": InterfaceMessageMatchConfiguration,
-	"PlayerInput":        InterfaceMessagePlayerInput,
-	"DesiredGameState":   InterfaceMessageDesiredGameState,
-	"RenderGroup":        InterfaceMessageRenderGroup,
-	"RemoveRenderGroup":  InterfaceMessageRemoveRenderGroup,
-	"MatchComm":          InterfaceMessageMatchComm,
-	"ConnectionSettings": InterfaceMessageConnectionSettings,
-	"StopCommand":        InterfaceMessageStopCommand,
-	"SetLoadout":         InterfaceMessageSetLoadout,
-	"InitComplete":       InterfaceMessageInitComplete,
-	"RenderingStatus":    InterfaceMessageRenderingStatus,
+	"NONE":                     InterfaceMessageNONE,
+	"DisconnectSignal":         InterfaceMessageDisconnectSignal,
+	"StartCommand":             InterfaceMessageStartCommand,
+	"MatchConfiguration":       InterfaceMessageMatchConfiguration,
+	"PlayerInput":              InterfaceMessagePlayerInput,
+	"DesiredGameState":         InterfaceMessageDesiredGameState,
+	"RenderGroup":              InterfaceMessageRenderGroup,
+	"RemoveRenderGroup":        InterfaceMessageRemoveRenderGroup,
+	"MatchComm":                InterfaceMessageMatchComm,
+	"ConnectionSettings":       InterfaceMessageConnectionSettings,
+	"StopCommand":              InterfaceMessageStopCommand,
+	"SetLoadout":               InterfaceMessageSetLoadout,
+	"InitComplete":             InterfaceMessageInitComplete,
+	"RenderingStatus":          InterfaceMessageRenderingStatus,
+	"PingRequest":              InterfaceMessagePingRequest,
+	"PingResponse":             InterfaceMessagePingResponse,
+	"UpdatePerformanceMonitor": InterfaceMessageUpdatePerformanceMonitor,
 }
 
 func (v InterfaceMessage) String() string {
@@ -126,6 +138,12 @@ func (t *InterfaceMessageT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffs
 		return t.Value.(*InitCompleteT).Pack(builder)
 	case InterfaceMessageRenderingStatus:
 		return t.Value.(*RenderingStatusT).Pack(builder)
+	case InterfaceMessagePingRequest:
+		return t.Value.(*PingRequestT).Pack(builder)
+	case InterfaceMessagePingResponse:
+		return t.Value.(*PingResponseT).Pack(builder)
+	case InterfaceMessageUpdatePerformanceMonitor:
+		return t.Value.(*UpdatePerformanceMonitorT).Pack(builder)
 	}
 	return 0
 }
@@ -184,6 +202,18 @@ func (rcv InterfaceMessage) UnPack(table flatbuffers.Table) *InterfaceMessageT {
 		var x RenderingStatus
 		x.Init(table.Bytes, table.Pos)
 		return &InterfaceMessageT{Type: InterfaceMessageRenderingStatus, Value: x.UnPack()}
+	case InterfaceMessagePingRequest:
+		var x PingRequest
+		x.Init(table.Bytes, table.Pos)
+		return &InterfaceMessageT{Type: InterfaceMessagePingRequest, Value: x.UnPack()}
+	case InterfaceMessagePingResponse:
+		var x PingResponse
+		x.Init(table.Bytes, table.Pos)
+		return &InterfaceMessageT{Type: InterfaceMessagePingResponse, Value: x.UnPack()}
+	case InterfaceMessageUpdatePerformanceMonitor:
+		var x UpdatePerformanceMonitor
+		x.Init(table.Bytes, table.Pos)
+		return &InterfaceMessageT{Type: InterfaceMessageUpdatePerformanceMonitor, Value: x.UnPack()}
 	}
 	return nil
 }

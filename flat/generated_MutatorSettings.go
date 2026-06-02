@@ -39,7 +39,7 @@ type MutatorSettingsT struct {
 	AerialGoalScore AerialGoalScoreMutator `json:"aerial_goal_score"`
 	AssistGoalScore AssistGoalScoreMutator `json:"assist_goal_score"`
 	InputRestriction InputRestrictionMutator `json:"input_restriction"`
-	ScoringRule ScoringRule `json:"scoring_rule"`
+	ScoringRule ScoringRuleMutator `json:"scoring_rule"`
 }
 
 func (t *MutatorSettingsT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -597,17 +597,17 @@ func (rcv *MutatorSettings) MutateInputRestriction(n InputRestrictionMutator) bo
 	return rcv._tab.MutateByteSlot(64, byte(n))
 }
 
-/// Additional rules that apply to scoring goals
-func (rcv *MutatorSettings) ScoringRule() ScoringRule {
+/// Additional rules about scoring (ball-goal interaction).
+func (rcv *MutatorSettings) ScoringRule() ScoringRuleMutator {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(66))
 	if o != 0 {
-		return ScoringRule(rcv._tab.GetByte(o + rcv._tab.Pos))
+		return ScoringRuleMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
-/// Additional rules that apply to scoring goals
-func (rcv *MutatorSettings) MutateScoringRule(n ScoringRule) bool {
+/// Additional rules about scoring (ball-goal interaction).
+func (rcv *MutatorSettings) MutateScoringRule(n ScoringRuleMutator) bool {
 	return rcv._tab.MutateByteSlot(66, byte(n))
 }
 
@@ -707,7 +707,7 @@ func MutatorSettingsAddAssistGoalScore(builder *flatbuffers.Builder, assistGoalS
 func MutatorSettingsAddInputRestriction(builder *flatbuffers.Builder, inputRestriction InputRestrictionMutator) {
 	builder.PrependByteSlot(30, byte(inputRestriction), 0)
 }
-func MutatorSettingsAddScoringRule(builder *flatbuffers.Builder, scoringRule ScoringRule) {
+func MutatorSettingsAddScoringRule(builder *flatbuffers.Builder, scoringRule ScoringRuleMutator) {
 	builder.PrependByteSlot(31, byte(scoringRule), 0)
 }
 func MutatorSettingsEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
