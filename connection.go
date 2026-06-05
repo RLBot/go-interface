@@ -102,6 +102,12 @@ func (conn RLBotConnection) SendPacket(msg any) error {
 		packetType = flat.InterfaceMessageInitComplete
 	case *flat.RenderingStatusT:
 		packetType = flat.InterfaceMessageRenderingStatus
+	case *flat.PingRequestT:
+		packetType = flat.InterfaceMessagePingRequest
+	case *flat.PingResponseT:
+		packetType = flat.InterfaceMessagePingResponse
+	case *flat.UpdatePerformanceMonitorT:
+		packetType = flat.InterfaceMessageUpdatePerformanceMonitor
 	default:
 		return errors.New("unsupported packet type")
 	}
