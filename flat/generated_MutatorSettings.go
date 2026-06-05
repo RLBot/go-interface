@@ -40,6 +40,12 @@ type MutatorSettingsT struct {
 	AssistGoalScore AssistGoalScoreMutator `json:"assist_goal_score"`
 	InputRestriction InputRestrictionMutator `json:"input_restriction"`
 	ScoringRule ScoringRuleMutator `json:"scoring_rule"`
+	TriTipMode TriTipModeMutator `json:"tri_tip_mode"`
+	LockedDamagePhase LockedDamagePhaseMutator `json:"locked_damage_phase"`
+	SpawnDemoball SpawnDemoballMutator `json:"spawn_demoball"`
+	BoostRestriction BoostRestritionMutator `json:"boost_restriction"`
+	KeepUpRules KeepUpRulesMutator `json:"keep_up_rules"`
+	MatchAdmin MatchAdminMutator `json:"match_admin"`
 }
 
 func (t *MutatorSettingsT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -79,6 +85,12 @@ func (t *MutatorSettingsT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffse
 	MutatorSettingsAddAssistGoalScore(builder, t.AssistGoalScore)
 	MutatorSettingsAddInputRestriction(builder, t.InputRestriction)
 	MutatorSettingsAddScoringRule(builder, t.ScoringRule)
+	MutatorSettingsAddTriTipMode(builder, t.TriTipMode)
+	MutatorSettingsAddLockedDamagePhase(builder, t.LockedDamagePhase)
+	MutatorSettingsAddSpawnDemoball(builder, t.SpawnDemoball)
+	MutatorSettingsAddBoostRestriction(builder, t.BoostRestriction)
+	MutatorSettingsAddKeepUpRules(builder, t.KeepUpRules)
+	MutatorSettingsAddMatchAdmin(builder, t.MatchAdmin)
 	return MutatorSettingsEnd(builder)
 }
 
@@ -115,6 +127,12 @@ func (rcv *MutatorSettings) UnPackTo(t *MutatorSettingsT) {
 	t.AssistGoalScore = rcv.AssistGoalScore()
 	t.InputRestriction = rcv.InputRestriction()
 	t.ScoringRule = rcv.ScoringRule()
+	t.TriTipMode = rcv.TriTipMode()
+	t.LockedDamagePhase = rcv.LockedDamagePhase()
+	t.SpawnDemoball = rcv.SpawnDemoball()
+	t.BoostRestriction = rcv.BoostRestriction()
+	t.KeepUpRules = rcv.KeepUpRules()
+	t.MatchAdmin = rcv.MatchAdmin()
 }
 
 func (rcv *MutatorSettings) UnPack() *MutatorSettingsT {
@@ -611,8 +629,92 @@ func (rcv *MutatorSettings) MutateScoringRule(n ScoringRuleMutator) bool {
 	return rcv._tab.MutateByteSlot(66, byte(n))
 }
 
+/// Tri tip car mode.
+func (rcv *MutatorSettings) TriTipMode() TriTipModeMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(68))
+	if o != 0 {
+		return TriTipModeMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Tri tip car mode.
+func (rcv *MutatorSettings) MutateTriTipMode(n TriTipModeMutator) bool {
+	return rcv._tab.MutateByteSlot(68, byte(n))
+}
+
+/// Locked damage phase mode.
+func (rcv *MutatorSettings) LockedDamagePhase() LockedDamagePhaseMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(70))
+	if o != 0 {
+		return LockedDamagePhaseMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Locked damage phase mode.
+func (rcv *MutatorSettings) MutateLockedDamagePhase(n LockedDamagePhaseMutator) bool {
+	return rcv._tab.MutateByteSlot(70, byte(n))
+}
+
+/// Spawn demoball.
+func (rcv *MutatorSettings) SpawnDemoball() SpawnDemoballMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(72))
+	if o != 0 {
+		return SpawnDemoballMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Spawn demoball.
+func (rcv *MutatorSettings) MutateSpawnDemoball(n SpawnDemoballMutator) bool {
+	return rcv._tab.MutateByteSlot(72, byte(n))
+}
+
+/// Boost restriction.
+func (rcv *MutatorSettings) BoostRestriction() BoostRestritionMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(74))
+	if o != 0 {
+		return BoostRestritionMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Boost restriction.
+func (rcv *MutatorSettings) MutateBoostRestriction(n BoostRestritionMutator) bool {
+	return rcv._tab.MutateByteSlot(74, byte(n))
+}
+
+/// Keep up rules.
+func (rcv *MutatorSettings) KeepUpRules() KeepUpRulesMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(76))
+	if o != 0 {
+		return KeepUpRulesMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Keep up rules.
+func (rcv *MutatorSettings) MutateKeepUpRules(n KeepUpRulesMutator) bool {
+	return rcv._tab.MutateByteSlot(76, byte(n))
+}
+
+/// Match admin.
+func (rcv *MutatorSettings) MatchAdmin() MatchAdminMutator {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(78))
+	if o != 0 {
+		return MatchAdminMutator(rcv._tab.GetByte(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+/// Match admin.
+func (rcv *MutatorSettings) MutateMatchAdmin(n MatchAdminMutator) bool {
+	return rcv._tab.MutateByteSlot(78, byte(n))
+}
+
 func MutatorSettingsStart(builder *flatbuffers.Builder) {
-	builder.StartObject(32)
+	builder.StartObject(38)
 }
 func MutatorSettingsAddMatchLength(builder *flatbuffers.Builder, matchLength MatchLengthMutator) {
 	builder.PrependByteSlot(0, byte(matchLength), 0)
@@ -709,6 +811,24 @@ func MutatorSettingsAddInputRestriction(builder *flatbuffers.Builder, inputRestr
 }
 func MutatorSettingsAddScoringRule(builder *flatbuffers.Builder, scoringRule ScoringRuleMutator) {
 	builder.PrependByteSlot(31, byte(scoringRule), 0)
+}
+func MutatorSettingsAddTriTipMode(builder *flatbuffers.Builder, triTipMode TriTipModeMutator) {
+	builder.PrependByteSlot(32, byte(triTipMode), 0)
+}
+func MutatorSettingsAddLockedDamagePhase(builder *flatbuffers.Builder, lockedDamagePhase LockedDamagePhaseMutator) {
+	builder.PrependByteSlot(33, byte(lockedDamagePhase), 0)
+}
+func MutatorSettingsAddSpawnDemoball(builder *flatbuffers.Builder, spawnDemoball SpawnDemoballMutator) {
+	builder.PrependByteSlot(34, byte(spawnDemoball), 0)
+}
+func MutatorSettingsAddBoostRestriction(builder *flatbuffers.Builder, boostRestriction BoostRestritionMutator) {
+	builder.PrependByteSlot(35, byte(boostRestriction), 0)
+}
+func MutatorSettingsAddKeepUpRules(builder *flatbuffers.Builder, keepUpRules KeepUpRulesMutator) {
+	builder.PrependByteSlot(36, byte(keepUpRules), 0)
+}
+func MutatorSettingsAddMatchAdmin(builder *flatbuffers.Builder, matchAdmin MatchAdminMutator) {
+	builder.PrependByteSlot(37, byte(matchAdmin), 0)
 }
 func MutatorSettingsEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

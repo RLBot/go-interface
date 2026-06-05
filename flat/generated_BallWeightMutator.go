@@ -16,6 +16,7 @@ const (
 	BallWeightMutatorBeachBallCurve    BallWeightMutator = 5
 	BallWeightMutatorMagnusFutBall     BallWeightMutator = 6
 	BallWeightMutatorMagnusFutballLess BallWeightMutator = 7
+	BallWeightMutatorBalloon           BallWeightMutator = 8
 )
 
 var EnumNamesBallWeightMutator = map[BallWeightMutator]string{
@@ -27,6 +28,7 @@ var EnumNamesBallWeightMutator = map[BallWeightMutator]string{
 	BallWeightMutatorBeachBallCurve:    "BeachBallCurve",
 	BallWeightMutatorMagnusFutBall:     "MagnusFutBall",
 	BallWeightMutatorMagnusFutballLess: "MagnusFutballLess",
+	BallWeightMutatorBalloon:           "Balloon",
 }
 
 var EnumValuesBallWeightMutator = map[string]BallWeightMutator{
@@ -38,6 +40,7 @@ var EnumValuesBallWeightMutator = map[string]BallWeightMutator{
 	"BeachBallCurve":    BallWeightMutatorBeachBallCurve,
 	"MagnusFutBall":     BallWeightMutatorMagnusFutBall,
 	"MagnusFutballLess": BallWeightMutatorMagnusFutballLess,
+	"Balloon":           BallWeightMutatorBalloon,
 }
 
 func (v BallWeightMutator) String() string {

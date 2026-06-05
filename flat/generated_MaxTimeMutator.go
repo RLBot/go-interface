@@ -8,18 +8,60 @@ import "strconv"
 type MaxTimeMutator byte
 
 const (
-	MaxTimeMutatorUnlimited     MaxTimeMutator = 0
-	MaxTimeMutatorElevenMinutes MaxTimeMutator = 1
+	MaxTimeMutatorUnlimited       MaxTimeMutator = 0
+	MaxTimeMutatorOneMinute       MaxTimeMutator = 1
+	MaxTimeMutatorTwoMinutes      MaxTimeMutator = 2
+	MaxTimeMutatorThreeMinutes    MaxTimeMutator = 3
+	MaxTimeMutatorFourMinutes     MaxTimeMutator = 4
+	MaxTimeMutatorFiveMinutes     MaxTimeMutator = 5
+	MaxTimeMutatorSixMinutes      MaxTimeMutator = 6
+	MaxTimeMutatorSevenMinutes    MaxTimeMutator = 7
+	MaxTimeMutatorEightMinutes    MaxTimeMutator = 8
+	MaxTimeMutatorNineMinutes     MaxTimeMutator = 9
+	MaxTimeMutatorTenMinutes      MaxTimeMutator = 10
+	MaxTimeMutatorElevenMinutes   MaxTimeMutator = 11
+	MaxTimeMutatorTwelveMinutes   MaxTimeMutator = 12
+	MaxTimeMutatorThirteenMinutes MaxTimeMutator = 13
+	MaxTimeMutatorFourteenMinutes MaxTimeMutator = 14
+	MaxTimeMutatorFifteenMinutes  MaxTimeMutator = 15
 )
 
 var EnumNamesMaxTimeMutator = map[MaxTimeMutator]string{
-	MaxTimeMutatorUnlimited:     "Unlimited",
-	MaxTimeMutatorElevenMinutes: "ElevenMinutes",
+	MaxTimeMutatorUnlimited:       "Unlimited",
+	MaxTimeMutatorOneMinute:       "OneMinute",
+	MaxTimeMutatorTwoMinutes:      "TwoMinutes",
+	MaxTimeMutatorThreeMinutes:    "ThreeMinutes",
+	MaxTimeMutatorFourMinutes:     "FourMinutes",
+	MaxTimeMutatorFiveMinutes:     "FiveMinutes",
+	MaxTimeMutatorSixMinutes:      "SixMinutes",
+	MaxTimeMutatorSevenMinutes:    "SevenMinutes",
+	MaxTimeMutatorEightMinutes:    "EightMinutes",
+	MaxTimeMutatorNineMinutes:     "NineMinutes",
+	MaxTimeMutatorTenMinutes:      "TenMinutes",
+	MaxTimeMutatorElevenMinutes:   "ElevenMinutes",
+	MaxTimeMutatorTwelveMinutes:   "TwelveMinutes",
+	MaxTimeMutatorThirteenMinutes: "ThirteenMinutes",
+	MaxTimeMutatorFourteenMinutes: "FourteenMinutes",
+	MaxTimeMutatorFifteenMinutes:  "FifteenMinutes",
 }
 
 var EnumValuesMaxTimeMutator = map[string]MaxTimeMutator{
-	"Unlimited":     MaxTimeMutatorUnlimited,
-	"ElevenMinutes": MaxTimeMutatorElevenMinutes,
+	"Unlimited":       MaxTimeMutatorUnlimited,
+	"OneMinute":       MaxTimeMutatorOneMinute,
+	"TwoMinutes":      MaxTimeMutatorTwoMinutes,
+	"ThreeMinutes":    MaxTimeMutatorThreeMinutes,
+	"FourMinutes":     MaxTimeMutatorFourMinutes,
+	"FiveMinutes":     MaxTimeMutatorFiveMinutes,
+	"SixMinutes":      MaxTimeMutatorSixMinutes,
+	"SevenMinutes":    MaxTimeMutatorSevenMinutes,
+	"EightMinutes":    MaxTimeMutatorEightMinutes,
+	"NineMinutes":     MaxTimeMutatorNineMinutes,
+	"TenMinutes":      MaxTimeMutatorTenMinutes,
+	"ElevenMinutes":   MaxTimeMutatorElevenMinutes,
+	"TwelveMinutes":   MaxTimeMutatorTwelveMinutes,
+	"ThirteenMinutes": MaxTimeMutatorThirteenMinutes,
+	"FourteenMinutes": MaxTimeMutatorFourteenMinutes,
+	"FifteenMinutes":  MaxTimeMutatorFifteenMinutes,
 }
 
 func (v MaxTimeMutator) String() string {
