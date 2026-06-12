@@ -15,6 +15,7 @@ type GamePacketT struct {
 	Balls []*BallInfoT `json:"balls"`
 	MatchInfo *MatchInfoT `json:"match_info"`
 	Teams []*TeamInfoT `json:"teams"`
+	Tiles []TileDamageLevel `json:"tiles"`
 }
 
 func (t *GamePacketT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -66,12 +67,22 @@ func (t *GamePacketT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		}
 		teamsOffset = builder.EndVector(teamsLength)
 	}
+	tilesOffset := flatbuffers.UOffsetT(0)
+	if t.Tiles != nil {
+		tilesLength := len(t.Tiles)
+		GamePacketStartTilesVector(builder, tilesLength)
+		for j := tilesLength - 1; j >= 0; j-- {
+			builder.PrependByte(byte(t.Tiles[j]))
+		}
+		tilesOffset = builder.EndVector(tilesLength)
+	}
 	GamePacketStart(builder)
 	GamePacketAddPlayers(builder, playersOffset)
 	GamePacketAddBoostPads(builder, boostPadsOffset)
 	GamePacketAddBalls(builder, ballsOffset)
 	GamePacketAddMatchInfo(builder, matchInfoOffset)
 	GamePacketAddTeams(builder, teamsOffset)
+	GamePacketAddTiles(builder, tilesOffset)
 	return GamePacketEnd(builder)
 }
 
@@ -104,6 +115,11 @@ func (rcv *GamePacket) UnPackTo(t *GamePacketT) {
 		x := TeamInfo{}
 		rcv.Teams(&x, j)
 		t.Teams[j] = x.UnPack()
+	}
+	tilesLength := rcv.TilesLength()
+	t.Tiles = make([]TileDamageLevel, tilesLength)
+	for j := 0; j < tilesLength; j++ {
+		t.Tiles[j] = rcv.Tiles(j)
 	}
 }
 
@@ -256,8 +272,44 @@ func (rcv *GamePacket) TeamsLength() int {
 }
 
 /// The current state of teams, i.e. the team scores.
+/// The state of the dropshot tiles. The tiles are sorted by y-coordinate and then x-coordinate.
+func (rcv *GamePacket) Tiles(j int) TileDamageLevel {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		a := rcv._tab.Vector(o)
+		return TileDamageLevel(rcv._tab.GetByte(a + flatbuffers.UOffsetT(j*1)))
+	}
+	return 0
+}
+
+func (rcv *GamePacket) TilesLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+func (rcv *GamePacket) TilesBytes() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+/// The state of the dropshot tiles. The tiles are sorted by y-coordinate and then x-coordinate.
+func (rcv *GamePacket) MutateTiles(j int, n TileDamageLevel) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		a := rcv._tab.Vector(o)
+		return rcv._tab.MutateByte(a+flatbuffers.UOffsetT(j*1), byte(n))
+	}
+	return false
+}
+
 func GamePacketStart(builder *flatbuffers.Builder) {
-	builder.StartObject(5)
+	builder.StartObject(6)
 }
 func GamePacketAddPlayers(builder *flatbuffers.Builder, players flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(players), 0)
@@ -285,6 +337,12 @@ func GamePacketAddTeams(builder *flatbuffers.Builder, teams flatbuffers.UOffsetT
 }
 func GamePacketStartTeamsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(8, numElems, 4)
+}
+func GamePacketAddTiles(builder *flatbuffers.Builder, tiles flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(tiles), 0)
+}
+func GamePacketStartTilesVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(1, numElems, 1)
 }
 func GamePacketEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

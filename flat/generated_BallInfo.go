@@ -10,6 +10,8 @@ import (
 type BallInfoT struct {
 	Physics *PhysicsT `json:"physics"`
 	Shape *CollisionShapeT `json:"shape"`
+	ChargeLevel int32 `json:"charge_level"`
+	TargetSpeed float32 `json:"target_speed"`
 }
 
 func (t *BallInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -25,6 +27,8 @@ func (t *BallInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		BallInfoAddShapeType(builder, t.Shape.Type)
 	}
 	BallInfoAddShape(builder, shapeOffset)
+	BallInfoAddChargeLevel(builder, t.ChargeLevel)
+	BallInfoAddTargetSpeed(builder, t.TargetSpeed)
 	return BallInfoEnd(builder)
 }
 
@@ -34,6 +38,8 @@ func (rcv *BallInfo) UnPackTo(t *BallInfoT) {
 	if rcv.Shape(&shapeTable) {
 		t.Shape = rcv.ShapeType().UnPack(shapeTable)
 	}
+	t.ChargeLevel = rcv.ChargeLevel()
+	t.TargetSpeed = rcv.TargetSpeed()
 }
 
 func (rcv *BallInfo) UnPack() *BallInfoT {
@@ -118,8 +124,46 @@ func (rcv *BallInfo) Shape(obj *flatbuffers.Table) bool {
 }
 
 /// The collision shape of the ball.
+/// The charge level, if it is a dropshot ball.
+/// -1 = Not dropshot
+/// 0 = No charge
+/// 1 = Charged
+/// 2 = Supercharged
+func (rcv *BallInfo) ChargeLevel() int32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	if o != 0 {
+		return rcv._tab.GetInt32(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+/// The charge level, if it is a dropshot ball.
+/// -1 = Not dropshot
+/// 0 = No charge
+/// 1 = Charged
+/// 2 = Supercharged
+func (rcv *BallInfo) MutateChargeLevel(n int32) bool {
+	return rcv._tab.MutateInt32Slot(10, n)
+}
+
+/// The target homing speed, if it is a heatseeker ball.
+/// If it is not a heatseeker ball, this is always 0.
+func (rcv *BallInfo) TargetSpeed() float32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
+	if o != 0 {
+		return rcv._tab.GetFloat32(o + rcv._tab.Pos)
+	}
+	return 0.0
+}
+
+/// The target homing speed, if it is a heatseeker ball.
+/// If it is not a heatseeker ball, this is always 0.
+func (rcv *BallInfo) MutateTargetSpeed(n float32) bool {
+	return rcv._tab.MutateFloat32Slot(12, n)
+}
+
 func BallInfoStart(builder *flatbuffers.Builder) {
-	builder.StartObject(3)
+	builder.StartObject(5)
 }
 func BallInfoAddPhysics(builder *flatbuffers.Builder, physics flatbuffers.UOffsetT) {
 	builder.PrependStructSlot(0, flatbuffers.UOffsetT(physics), 0)
@@ -129,6 +173,12 @@ func BallInfoAddShapeType(builder *flatbuffers.Builder, shapeType CollisionShape
 }
 func BallInfoAddShape(builder *flatbuffers.Builder, shape flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(shape), 0)
+}
+func BallInfoAddChargeLevel(builder *flatbuffers.Builder, chargeLevel int32) {
+	builder.PrependInt32Slot(3, chargeLevel, 0)
+}
+func BallInfoAddTargetSpeed(builder *flatbuffers.Builder, targetSpeed float32) {
+	builder.PrependFloat32Slot(4, targetSpeed, 0.0)
 }
 func BallInfoEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

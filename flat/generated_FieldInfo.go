@@ -12,6 +12,7 @@ import (
 type FieldInfoT struct {
 	BoostPads []*BoostPadT `json:"boost_pads"`
 	Goals []*GoalInfoT `json:"goals"`
+	Tiles []*TileT `json:"tiles"`
 }
 
 func (t *FieldInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -44,9 +45,23 @@ func (t *FieldInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		}
 		goalsOffset = builder.EndVector(goalsLength)
 	}
+	tilesOffset := flatbuffers.UOffsetT(0)
+	if t.Tiles != nil {
+		tilesLength := len(t.Tiles)
+		tilesOffsets := make([]flatbuffers.UOffsetT, tilesLength)
+		for j := 0; j < tilesLength; j++ {
+			tilesOffsets[j] = t.Tiles[j].Pack(builder)
+		}
+		FieldInfoStartTilesVector(builder, tilesLength)
+		for j := tilesLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(tilesOffsets[j])
+		}
+		tilesOffset = builder.EndVector(tilesLength)
+	}
 	FieldInfoStart(builder)
 	FieldInfoAddBoostPads(builder, boostPadsOffset)
 	FieldInfoAddGoals(builder, goalsOffset)
+	FieldInfoAddTiles(builder, tilesOffset)
 	return FieldInfoEnd(builder)
 }
 
@@ -64,6 +79,13 @@ func (rcv *FieldInfo) UnPackTo(t *FieldInfoT) {
 		x := GoalInfo{}
 		rcv.Goals(&x, j)
 		t.Goals[j] = x.UnPack()
+	}
+	tilesLength := rcv.TilesLength()
+	t.Tiles = make([]*TileT, tilesLength)
+	for j := 0; j < tilesLength; j++ {
+		x := Tile{}
+		rcv.Tiles(&x, j)
+		t.Tiles[j] = x.UnPack()
 	}
 }
 
@@ -112,7 +134,7 @@ func (rcv *FieldInfo) Table() flatbuffers.Table {
 }
 
 /// Static information about boost pads on the field.
-/// The dynamic information is found in the GamePacket
+/// The dynamic information is found in the GamePacket.
 /// The boost pads are ordered by y-coordinate and then x-coordinate.
 func (rcv *FieldInfo) BoostPads(obj *BoostPad, j int) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
@@ -135,7 +157,7 @@ func (rcv *FieldInfo) BoostPadsLength() int {
 }
 
 /// Static information about boost pads on the field.
-/// The dynamic information is found in the GamePacket
+/// The dynamic information is found in the GamePacket.
 /// The boost pads are ordered by y-coordinate and then x-coordinate.
 /// Information about the goals on the field.
 func (rcv *FieldInfo) Goals(obj *GoalInfo, j int) bool {
@@ -159,8 +181,34 @@ func (rcv *FieldInfo) GoalsLength() int {
 }
 
 /// Information about the goals on the field.
+/// Static information about dropshot tiles on the field.
+/// The dynamic information is found in the GamePacket.
+/// The tiles are ordered by y-coordinate and then x-coordinate.
+func (rcv *FieldInfo) Tiles(obj *Tile, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		x += flatbuffers.UOffsetT(j) * 4
+		x = rcv._tab.Indirect(x)
+		obj.Init(rcv._tab.Bytes, x)
+		return true
+	}
+	return false
+}
+
+func (rcv *FieldInfo) TilesLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+/// Static information about dropshot tiles on the field.
+/// The dynamic information is found in the GamePacket.
+/// The tiles are ordered by y-coordinate and then x-coordinate.
 func FieldInfoStart(builder *flatbuffers.Builder) {
-	builder.StartObject(2)
+	builder.StartObject(3)
 }
 func FieldInfoAddBoostPads(builder *flatbuffers.Builder, boostPads flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(boostPads), 0)
@@ -172,6 +220,12 @@ func FieldInfoAddGoals(builder *flatbuffers.Builder, goals flatbuffers.UOffsetT)
 	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(goals), 0)
 }
 func FieldInfoStartGoalsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(4, numElems, 4)
+}
+func FieldInfoAddTiles(builder *flatbuffers.Builder, tiles flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(tiles), 0)
+}
+func FieldInfoStartTilesVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 4)
 }
 func FieldInfoEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {

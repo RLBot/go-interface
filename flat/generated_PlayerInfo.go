@@ -29,6 +29,9 @@ type PlayerInfoT struct {
 	HasDodged bool `json:"has_dodged"`
 	DodgeElapsed float32 `json:"dodge_elapsed"`
 	DodgeDir *Vector2T `json:"dodge_dir"`
+	RumbleItem *RumbleItem `json:"rumble_item"`
+	TimeUntilNextItem float32 `json:"time_until_next_item"`
+	MaxTimeUntilNextItem float32 `json:"max_time_until_next_item"`
 }
 
 func (t *PlayerInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -81,6 +84,11 @@ func (t *PlayerInfoT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	PlayerInfoAddDodgeElapsed(builder, t.DodgeElapsed)
 	dodgeDirOffset := t.DodgeDir.Pack(builder)
 	PlayerInfoAddDodgeDir(builder, dodgeDirOffset)
+	if t.RumbleItem != nil {
+		PlayerInfoAddRumbleItem(builder, *t.RumbleItem)
+	}
+	PlayerInfoAddTimeUntilNextItem(builder, t.TimeUntilNextItem)
+	PlayerInfoAddMaxTimeUntilNextItem(builder, t.MaxTimeUntilNextItem)
 	return PlayerInfoEnd(builder)
 }
 
@@ -110,6 +118,9 @@ func (rcv *PlayerInfo) UnPackTo(t *PlayerInfoT) {
 	t.HasDodged = rcv.HasDodged()
 	t.DodgeElapsed = rcv.DodgeElapsed()
 	t.DodgeDir = rcv.DodgeDir(nil).UnPack()
+	t.RumbleItem = rcv.RumbleItem()
+	t.TimeUntilNextItem = rcv.TimeUntilNextItem()
+	t.MaxTimeUntilNextItem = rcv.MaxTimeUntilNextItem()
 }
 
 func (rcv *PlayerInfo) UnPack() *PlayerInfoT {
@@ -518,8 +529,53 @@ func (rcv *PlayerInfo) DodgeDir(obj *Vector2) *Vector2 {
 
 /// The unit direction of the latest dodge.
 /// The value will be (0,0) if it was a stall.
+/// Which item the player has, if any
+func (rcv *PlayerInfo) RumbleItem() *RumbleItem {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(46))
+	if o != 0 {
+		v := RumbleItem(rcv._tab.GetByte(o + rcv._tab.Pos))
+		return &v
+	}
+	return nil
+}
+
+/// Which item the player has, if any
+func (rcv *PlayerInfo) MutateRumbleItem(n RumbleItem) bool {
+	return rcv._tab.MutateByteSlot(46, byte(n))
+}
+
+/// If `rumble_item` is null, this is a countdown until the next item is recieved.
+/// Otherwise, this field equals 0.
+func (rcv *PlayerInfo) TimeUntilNextItem() float32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(48))
+	if o != 0 {
+		return rcv._tab.GetFloat32(o + rcv._tab.Pos)
+	}
+	return 0.0
+}
+
+/// If `rumble_item` is null, this is a countdown until the next item is recieved.
+/// Otherwise, this field equals 0.
+func (rcv *PlayerInfo) MutateTimeUntilNextItem(n float32) bool {
+	return rcv._tab.MutateFloat32Slot(48, n)
+}
+
+/// The initial value of `time_until_next_item`.
+func (rcv *PlayerInfo) MaxTimeUntilNextItem() float32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(50))
+	if o != 0 {
+		return rcv._tab.GetFloat32(o + rcv._tab.Pos)
+	}
+	return 0.0
+}
+
+/// The initial value of `time_until_next_item`.
+func (rcv *PlayerInfo) MutateMaxTimeUntilNextItem(n float32) bool {
+	return rcv._tab.MutateFloat32Slot(50, n)
+}
+
 func PlayerInfoStart(builder *flatbuffers.Builder) {
-	builder.StartObject(21)
+	builder.StartObject(24)
 }
 func PlayerInfoAddPhysics(builder *flatbuffers.Builder, physics flatbuffers.UOffsetT) {
 	builder.PrependStructSlot(0, flatbuffers.UOffsetT(physics), 0)
@@ -586,6 +642,16 @@ func PlayerInfoAddDodgeElapsed(builder *flatbuffers.Builder, dodgeElapsed float3
 }
 func PlayerInfoAddDodgeDir(builder *flatbuffers.Builder, dodgeDir flatbuffers.UOffsetT) {
 	builder.PrependStructSlot(20, flatbuffers.UOffsetT(dodgeDir), 0)
+}
+func PlayerInfoAddRumbleItem(builder *flatbuffers.Builder, rumbleItem RumbleItem) {
+	builder.PrependByte(byte(rumbleItem))
+	builder.Slot(21)
+}
+func PlayerInfoAddTimeUntilNextItem(builder *flatbuffers.Builder, timeUntilNextItem float32) {
+	builder.PrependFloat32Slot(22, timeUntilNextItem, 0.0)
+}
+func PlayerInfoAddMaxTimeUntilNextItem(builder *flatbuffers.Builder, maxTimeUntilNextItem float32) {
+	builder.PrependFloat32Slot(23, maxTimeUntilNextItem, 0.0)
 }
 func PlayerInfoEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
