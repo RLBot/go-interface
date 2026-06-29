@@ -13,6 +13,7 @@ type ScriptConfigurationT struct {
 	RunCommand string `json:"run_command"`
 	ScriptId int32 `json:"script_id"`
 	AgentId string `json:"agent_id"`
+	Environment []*EnvironmentVariableT `json:"environment"`
 }
 
 func (t *ScriptConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -35,12 +36,26 @@ func (t *ScriptConfigurationT) Pack(builder *flatbuffers.Builder) flatbuffers.UO
 	if t.AgentId != "" {
 		agentIdOffset = builder.CreateString(t.AgentId)
 	}
+	environmentOffset := flatbuffers.UOffsetT(0)
+	if t.Environment != nil {
+		environmentLength := len(t.Environment)
+		environmentOffsets := make([]flatbuffers.UOffsetT, environmentLength)
+		for j := 0; j < environmentLength; j++ {
+			environmentOffsets[j] = t.Environment[j].Pack(builder)
+		}
+		ScriptConfigurationStartEnvironmentVector(builder, environmentLength)
+		for j := environmentLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(environmentOffsets[j])
+		}
+		environmentOffset = builder.EndVector(environmentLength)
+	}
 	ScriptConfigurationStart(builder)
 	ScriptConfigurationAddName(builder, nameOffset)
 	ScriptConfigurationAddRootDir(builder, rootDirOffset)
 	ScriptConfigurationAddRunCommand(builder, runCommandOffset)
 	ScriptConfigurationAddScriptId(builder, t.ScriptId)
 	ScriptConfigurationAddAgentId(builder, agentIdOffset)
+	ScriptConfigurationAddEnvironment(builder, environmentOffset)
 	return ScriptConfigurationEnd(builder)
 }
 
@@ -50,6 +65,13 @@ func (rcv *ScriptConfiguration) UnPackTo(t *ScriptConfigurationT) {
 	t.RunCommand = string(rcv.RunCommand())
 	t.ScriptId = rcv.ScriptId()
 	t.AgentId = string(rcv.AgentId())
+	environmentLength := rcv.EnvironmentLength()
+	t.Environment = make([]*EnvironmentVariableT, environmentLength)
+	for j := 0; j < environmentLength; j++ {
+		x := EnvironmentVariable{}
+		rcv.Environment(&x, j)
+		t.Environment[j] = x.UnPack()
+	}
 }
 
 func (rcv *ScriptConfiguration) UnPack() *ScriptConfigurationT {
@@ -158,8 +180,39 @@ func (rcv *ScriptConfiguration) AgentId() []byte {
 /// If a bot/script has a run command, RLBot will pass this agent id to the process using an environment variable, RLBOT_AGENT_ID.
 /// Upon connecting the process announces that it is responsible for this agent id and RLBot will pair the two.
 /// The recommended format for agent ids is "developername/botname".
+/// User-defined environment variables to pass to the script process.
+func (rcv *ScriptConfiguration) Environment(obj *EnvironmentVariable, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		x += flatbuffers.UOffsetT(j) * 4
+		x = rcv._tab.Indirect(x)
+		obj.Init(rcv._tab.Bytes, x)
+		return true
+	}
+	return false
+}
+
+func (rcv *ScriptConfiguration) EnvironmentByKey(obj *EnvironmentVariable, key string) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		return obj.LookupByKey(key, x, rcv._tab.Bytes)
+	}
+	return false
+}
+
+func (rcv *ScriptConfiguration) EnvironmentLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+/// User-defined environment variables to pass to the script process.
 func ScriptConfigurationStart(builder *flatbuffers.Builder) {
-	builder.StartObject(5)
+	builder.StartObject(6)
 }
 func ScriptConfigurationAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
@@ -175,6 +228,12 @@ func ScriptConfigurationAddScriptId(builder *flatbuffers.Builder, scriptId int32
 }
 func ScriptConfigurationAddAgentId(builder *flatbuffers.Builder, agentId flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(agentId), 0)
+}
+func ScriptConfigurationAddEnvironment(builder *flatbuffers.Builder, environment flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(environment), 0)
+}
+func ScriptConfigurationStartEnvironmentVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(4, numElems, 4)
 }
 func ScriptConfigurationEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

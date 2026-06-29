@@ -14,6 +14,7 @@ type CustomBotT struct {
 	Loadout *PlayerLoadoutT `json:"loadout"`
 	AgentId string `json:"agent_id"`
 	Hivemind bool `json:"hivemind"`
+	Environment []*EnvironmentVariableT `json:"environment"`
 }
 
 func (t *CustomBotT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -37,6 +38,19 @@ func (t *CustomBotT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t.AgentId != "" {
 		agentIdOffset = builder.CreateString(t.AgentId)
 	}
+	environmentOffset := flatbuffers.UOffsetT(0)
+	if t.Environment != nil {
+		environmentLength := len(t.Environment)
+		environmentOffsets := make([]flatbuffers.UOffsetT, environmentLength)
+		for j := 0; j < environmentLength; j++ {
+			environmentOffsets[j] = t.Environment[j].Pack(builder)
+		}
+		CustomBotStartEnvironmentVector(builder, environmentLength)
+		for j := environmentLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(environmentOffsets[j])
+		}
+		environmentOffset = builder.EndVector(environmentLength)
+	}
 	CustomBotStart(builder)
 	CustomBotAddName(builder, nameOffset)
 	CustomBotAddRootDir(builder, rootDirOffset)
@@ -44,6 +58,7 @@ func (t *CustomBotT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	CustomBotAddLoadout(builder, loadoutOffset)
 	CustomBotAddAgentId(builder, agentIdOffset)
 	CustomBotAddHivemind(builder, t.Hivemind)
+	CustomBotAddEnvironment(builder, environmentOffset)
 	return CustomBotEnd(builder)
 }
 
@@ -54,6 +69,13 @@ func (rcv *CustomBot) UnPackTo(t *CustomBotT) {
 	t.Loadout = rcv.Loadout(nil).UnPack()
 	t.AgentId = string(rcv.AgentId())
 	t.Hivemind = rcv.Hivemind()
+	environmentLength := rcv.EnvironmentLength()
+	t.Environment = make([]*EnvironmentVariableT, environmentLength)
+	for j := 0; j < environmentLength; j++ {
+		x := EnvironmentVariable{}
+		rcv.Environment(&x, j)
+		t.Environment[j] = x.UnPack()
+	}
 }
 
 func (rcv *CustomBot) UnPack() *CustomBotT {
@@ -179,8 +201,39 @@ func (rcv *CustomBot) MutateHivemind(n bool) bool {
 	return rcv._tab.MutateBoolSlot(14, n)
 }
 
+/// User-defined environment variables to pass to the bot process.
+func (rcv *CustomBot) Environment(obj *EnvironmentVariable, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		x += flatbuffers.UOffsetT(j) * 4
+		x = rcv._tab.Indirect(x)
+		obj.Init(rcv._tab.Bytes, x)
+		return true
+	}
+	return false
+}
+
+func (rcv *CustomBot) EnvironmentByKey(obj *EnvironmentVariable, key string) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		return obj.LookupByKey(key, x, rcv._tab.Bytes)
+	}
+	return false
+}
+
+func (rcv *CustomBot) EnvironmentLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+/// User-defined environment variables to pass to the bot process.
 func CustomBotStart(builder *flatbuffers.Builder) {
-	builder.StartObject(6)
+	builder.StartObject(7)
 }
 func CustomBotAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
@@ -199,6 +252,12 @@ func CustomBotAddAgentId(builder *flatbuffers.Builder, agentId flatbuffers.UOffs
 }
 func CustomBotAddHivemind(builder *flatbuffers.Builder, hivemind bool) {
 	builder.PrependBoolSlot(5, hivemind, false)
+}
+func CustomBotAddEnvironment(builder *flatbuffers.Builder, environment flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(environment), 0)
+}
+func CustomBotStartEnvironmentVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(4, numElems, 4)
 }
 func CustomBotEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
